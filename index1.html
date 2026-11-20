@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Website Update Realtime</title>
+    <title>Ngaji Bareng - Update Realtime</title>
     <style>
         body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
         input { width: 70%; padding: 10px; }
@@ -13,18 +13,18 @@
 </head>
 <body>
 
-    <h2>Papan Update Bersama</h2>
+    <h2>Papan Update Ngaji Bareng</h2>
     <input type="text" id="inputPesan" placeholder="Tulis update di sini...">
     <button onclick="kirimData()">Kirim</button>
 
     <ul id="daftarUpdate"></ul>
 
     <script type="module">
-        // 1. Import fungsi Firebase
+        // 1. Import fungsi Firebase (URL Lengkap)
         import { initializeApp } from "https://gstatic.com";
         import { getDatabase, ref, push, onValue } from "https://gstatic.com";
 
-        // 2. GANTI BAGIAN INI DENGAN CONFIG FIREBASE KAMU
+        // 2. Config Firebase Ngaji Bareng
         const firebaseConfig = {
             apiKey: "AIzaSyBBFFT2V9SOR8dAh7mheePBk1ggwQhIUYY",
             authDomain: "ngaji-bareng-2a823.firebaseapp.com",
@@ -38,7 +38,7 @@
         // 3. Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const updateRef = ref(db, 'updates'); // Nama folder di database
+        const updateRef = ref(db, 'updates');
 
         // 4. Fungsi mengirim data ke database
         window.kirimData = function() {
@@ -48,14 +48,14 @@
                     teks: input.value,
                     waktu: new Date().toLocaleTimeString()
                 });
-                input.value = ""; // Kosongkan input setelah kirim
+                input.value = "";
             }
         }
 
         // 5. Fungsi mendengarkan perubahan (Realtime)
         const daftarUl = document.getElementById('daftarUpdate');
         onValue(updateRef, (snapshot) => {
-            daftarUl.innerHTML = ""; // Bersihkan tampilan lama
+            daftarUl.innerHTML = "";
             const data = snapshot.val();
             
             for (let id in data) {

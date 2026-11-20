@@ -134,11 +134,11 @@ let S={peserta:[],setoran:[],quotes:[]},tab="dash",editId=null,selP=null,flt={q:
 function today(){const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function seed(){
-  S.peserta=[{id:"p1",nama:"Reski",target:600},{id:"p2",nama:"Ima Sholeha",target:600}];
+  S.peserta=[{id:"p1",nama:"Reski",target:600},{id:"p2",nama:"Ima Cantik Sholeha🌸",target:600}];
   S.setoran=[];
   S.quotes=[];
 }
-function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);if(!Array.isArray(S.peserta)||!Array.isArray(S.setoran))throw 0;S.peserta=[{id:"p1",nama:"Reski",target:S.peserta.find(p=>p.nama==="Reski")?.target||600},{id:"p2",nama:"Ima Sholeha",target:S.peserta.find(p=>p.nama==="Ima Sholeha")?.target||600}];S.setoran=S.setoran.filter(x=>["p1","p2"].includes(x.pid));S.quotes=Array.isArray(S.quotes)?S.quotes.filter(q=>["p1","p2"].includes(q.pid)&&Number.isFinite(Number(q.createdAt))&&(Date.now()-Number(q.createdAt)<24*60*60*1000)).map(q=>({...q,likes:Array.isArray(q.likes)?q.likes:[]})):[];save();return}}catch(e){}seed();save()}
+function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);if(!Array.isArray(S.peserta)||!Array.isArray(S.setoran))throw 0;S.peserta=[{id:"p1",nama:"Reski",target:S.peserta.find(p=>p.nama==="Reski")?.target||600},{id:"p2",nama:"Ima Cantik Sholeha🌸",target:S.peserta.find(p=>p.nama==="Ima Cantik Sholeha🌸")?.target||600}];S.setoran=S.setoran.filter(x=>["p1","p2"].includes(x.pid));S.quotes=Array.isArray(S.quotes)?S.quotes.filter(q=>["p1","p2"].includes(q.pid)&&Number.isFinite(Number(q.createdAt))&&(Date.now()-Number(q.createdAt)<24*60*60*1000)).map(q=>({...q,likes:Array.isArray(q.likes)?q.likes:[]})):[];save();return}}catch(e){}seed();save()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("Penyimpanan penuh. Hapus data lama atau kurangi isi.")}}
 function cleanExpiredQuotes(){
   const before=(S.quotes||[]).length;
@@ -188,9 +188,9 @@ function dash(){
   </section>
   <section class="card" style="margin-bottom:14px">
    <h2>Quotes Peserta</h2>
-   <p class="quote-meta" style="margin-top:-6px">Reski dan Ima Sholeha dapat saling berbagi kata-kata penyemangat dan memberikan like.</p>
+   <p class="quote-meta" style="margin-top:-6px">Reski dan Ima Cantik Sholeha🌸 dapat saling berbagi kata-kata penyemangat dan memberikan like.</p>
    <form class="quote-form" id="quoteForm">
-    <div><label for="quoteBy">Kirim sebagai</label><select id="quoteBy"><option value="p1">Reski</option><option value="p2">Ima Sholeha</option></select></div>
+    <div><label for="quoteBy">Kirim sebagai</label><select id="quoteBy"><option value="p1">Reski</option><option value="p2">Ima Cantik Sholeha🌸</option></select></div>
     <div><label for="quoteText">Tulis quotes</label><textarea id="quoteText" maxlength="500" placeholder="Tuliskan pesan atau motivasi..." required></textarea></div>
     <div><button class="btn" type="submit">Kirim quotes</button></div>
    </form>

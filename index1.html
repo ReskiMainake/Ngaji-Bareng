@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Website Update Realtime</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
+        input { width: 70%; padding: 10px; }
+        button { width: 25%; padding: 10px; cursor: pointer; background: #007bff; color: white; border: none; }
+        ul { list-style: none; padding: 0; margin-top: 20px; }
+        li { background: #f4f4f4; padding: 10px; margin-bottom: 8px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Papan Update Bersama</h2>
+    <input type="text" id="inputPesan" placeholder="Tulis update di sini...">
+    <button onclick="kirimData()">Kirim</button>
+
+    <ul id="daftarUpdate"></ul>
+
+    <script type="module">
+        // 1. Import fungsi Firebase
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, push, onValue } from "https://gstatic.com";
+
+        // 2. GANTI BAGIAN INI DENGAN CONFIG FIREBASE KAMU
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBFFT2V9SOR8dAh7mheePBk1ggwQhIUYY",
+            authDomain: "ngaji-bareng-2a823.firebaseapp.com",
+            databaseURL: "https://ngaji-bareng-2a823-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "ngaji-bareng-2a823",
+            storageBucket: "ngaji-bareng-2a823.firebasestorage.app",
+            messagingSenderId: "522386091096",
+            appId: "1:522386091096:web:7362731fcb47c760e66e2d"
+        };
+
+        // 3. Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const updateRef = ref(db, 'updates'); // Nama folder di database
+
+        // 4. Fungsi mengirim data ke database
+        window.kirimData = function() {
+            const input = document.getElementById('inputPesan');
+            if (input.value.trim() !== "") {
+                push(updateRef, {
+                    teks: input.value,
+                    waktu: new Date().toLocaleTimeString()
+                });
+                input.value = ""; // Kosongkan input setelah kirim
+            }
+        }
+
+        // 5. Fungsi mendengarkan perubahan (Realtime)
+        const daftarUl = document.getElementById('daftarUpdate');
+        onValue(updateRef, (snapshot) => {
+            daftarUl.innerHTML = ""; // Bersihkan tampilan lama
+            const data = snapshot.val();
+            
+            for (let id in data) {
+                const li = document.createElement('li');
+                li.textContent = `[${data[id].waktu}] ${data[id].teks}`;
+                daftarUl.appendChild(li);
+            }
+        });
+    </script>
+</body>
+</html>

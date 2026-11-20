@@ -1,438 +1,258 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Setoran Hafalan Reski & Ima</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Great+Vibes&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buku Setoran Hafalan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fdf1f5;--card:#fffbfc;--ink:#4b1d34;--mut:#9a6580;--line:#f2d6e1;--teal:#b3265f;--gold:#b98a4e;--plum:#8b4fb3;--ok:#1f8a5b;--warn:#c4472f;--glow:#fbcfdf;--sh:0 1px 2px rgba(120,30,70,.06),0 12px 32px rgba(179,38,95,.10)}
-@media (prefers-color-scheme:dark){:root{--bg:#1c0b14;--card:#2a1220;--ink:#fde7ef;--mut:#d3a0b8;--line:#4a2438;--teal:#ff8fb8;--gold:#efc486;--plum:#d3a6f2;--warn:#ff9a7a;--glow:#3a1428;--sh:0 12px 32px rgba(0,0,0,.35)}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Nunito,system-ui,sans-serif}
-.hero{background:var(--hero);color:var(--heroink);background-image:repeating-linear-gradient(45deg,rgba(220,180,88,.05) 0 1px,transparent 1px 14px),repeating-linear-gradient(-45deg,rgba(220,180,88,.05) 0 1px,transparent 1px 14px);border-bottom:3px double var(--gold)}
-.hero .in{max-width:1000px;margin:auto;padding:34px 22px 0;text-align:center}
-.bis{font:400 1.9rem/1.8 Amiri,serif;color:var(--gold);margin:0;direction:rtl}
-h1{font:700 2.3rem/1.2 Amiri,serif;margin:2px 0 0;letter-spacing:.01em}
-.hero p.sub{margin:6px 0 22px;opacity:.75;font-size:.95rem}
-nav{display:flex;justify-content:center;gap:4px;overflow-x:auto}
-nav button{border:0;background:none;color:var(--heroink);opacity:.65;padding:12px 18px;font:600 .92rem Nunito,sans-serif;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px}
-nav button:hover{opacity:1}
-nav button[aria-selected=true]{opacity:1;border-bottom-color:var(--gold);color:var(--gold)}
-main{max-width:1000px;margin:auto;padding:28px 22px 70px}
-section{display:none}section.on{display:block}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:var(--sh)}
-h2{font:700 1.45rem Amiri,serif;margin:0 0 14px;color:var(--teal)}
-.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.grid .card{margin:0}.grid{margin-bottom:20px}
-.stat b{display:block;font:700 2.6rem/1.1 Amiri,serif;color:var(--teal)}
-.stat span{color:var(--mut);font-size:.88rem}
-.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin:10px 0 6px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#d9b45a);width:0;transition:width .6s}
-.streak{font:700 2.1rem/1.2 Amiri,serif}
-.reski{color:var(--teal)}.ima{color:var(--plum)}
-.card h2.reski{color:var(--teal)}.card h2.ima{color:var(--plum)}
-label{display:block;font-size:.84rem;font-weight:600;margin:12px 0 4px;color:var(--mut)}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
-input:focus,select:focus,textarea:focus{border-color:var(--gold)}
-:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
-.btn{margin-top:16px;background:var(--teal);color:var(--card);border:0;padding:11px 24px;border-radius:8px;font:700 .95rem Nunito;cursor:pointer}
-.btn:hover{filter:brightness(1.12)}
-.btn.alt{background:transparent;color:var(--teal);border:1px solid var(--teal);margin:0}
-.btn.rec{background:var(--warn);color:#fff}
-.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}
-th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--mut);font-weight:600;font-size:.84rem}
-.tag{display:inline-block;padding:2px 11px;border-radius:99px;font-size:.78rem;font-weight:700}
-.tag.l{background:#d6f1e5;color:#13694a}.tag.m{background:#fbe0d1;color:#9c3f12}
-.x{background:none;border:0;color:var(--mut);cursor:pointer;font-size:1.05rem}
-.item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.item:last-child{border-bottom:0}
-.item small{color:var(--mut);display:block}
-.late{color:var(--warn)!important;font-weight:700}
-.ar{font:400 1.6rem/2 Amiri,serif;direction:rtl;margin:0;color:var(--teal)}
-.empty{color:var(--mut);padding:10px 0}
-audio{width:100%;max-width:320px;height:36px}
-.fil{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap;align-items:center}
-.fil button{border:1px solid var(--line);background:none;color:var(--ink);padding:6px 14px;border-radius:99px;font:600 .82rem Nunito;cursor:pointer}
-.fil button.on{background:var(--teal);color:var(--card);border-color:var(--teal)}
-.fil .cnt{margin-left:auto;color:var(--mut);font-size:.88rem}
-.sl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0 28px}
-.sr{display:grid;grid-template-columns:34px 1fr 28px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
-.sr .no{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:.76rem;color:var(--mut);font-weight:600}
-.sr .nm{font-weight:600;line-height:1.25}
-.sr .nm small{display:block;font-weight:400;color:var(--mut);font-size:.78rem}
-.sr .mini{height:3px;border-radius:3px;background:var(--line);margin-top:4px;overflow:hidden}
-.sr .mini i{display:block;height:100%;background:var(--gold)}
-.sr .ck{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center}
-.sr.done .ck{background:var(--gold);border-color:var(--gold);color:#fff}
-.sr.done .no{border-color:var(--gold);color:var(--gold)}
-.sr.none .nm{color:var(--mut);font-weight:400}
-
-body{background:radial-gradient(1100px 380px at 50% -120px,var(--glow),transparent),var(--bg);background-attachment:fixed}
-.hero{background:repeating-linear-gradient(45deg,rgba(255,224,170,.06) 0 1px,transparent 1px 16px),repeating-linear-gradient(-45deg,rgba(255,224,170,.06) 0 1px,transparent 1px 16px),linear-gradient(160deg,#47102a,#8a1f50 65%,#b8416f);color:#ffeaf1;border-bottom:3px double #efc486}
-.bis{color:#efc486}
-.hero h1{font:400 3.4rem/1.25 'Great Vibes',cursive;background:linear-gradient(90deg,#ffe3ec,#f6d9a3,#ffe3ec);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#ffe3ec;letter-spacing:0}
-nav button{color:#ffeaf1}
-nav button[aria-selected=true]{color:#f6d9a3;border-bottom-color:#f6d9a3}
-.who{text-align:right;font-size:.85rem;opacity:.9;min-height:1.3em;margin-bottom:-6px}
-.who button{background:none;border:1px solid rgba(255,234,241,.5);color:inherit;border-radius:99px;padding:2px 12px;margin-left:10px;cursor:pointer;font:inherit}
-.card{border-radius:16px;border-top:2px solid var(--gold)}
-h2,.stat b,.streak,.sr .nm{font-family:'Cormorant Garamond',Amiri,serif}
-h2{font-weight:700;font-size:1.6rem}
-.sr .nm{font-size:1.08rem}
-.sr .nm small{font-family:Nunito,sans-serif}
-.bar i,.sr .mini i{background:linear-gradient(90deg,#e57aa3,#d9a566)}
-.btn{background:linear-gradient(135deg,#d9487f,#a3235a);color:#fff;box-shadow:0 6px 16px rgba(179,38,95,.28)}
-.fil button.on{color:#fff}
-.ar{color:var(--teal)}
-.q{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:16px;padding:24px 22px 14px 26px;margin-bottom:18px;box-shadow:var(--sh);overflow:hidden}
-.q.Ima{border-left-color:var(--plum)}
-.qm{position:absolute;top:-4px;right:20px;font:700 5.5rem/1 'Cormorant Garamond',serif;color:var(--gold);opacity:.35}
-.qt{font:italic 500 1.45rem/1.5 'Cormorant Garamond',serif;margin:0 0 10px;color:var(--teal);white-space:pre-wrap}
-.q.Ima .qt{color:var(--plum)}
-.q img{max-width:100%;border-radius:12px;margin:6px 0 10px;display:block}
-.q footer{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;color:var(--mut);font-size:.85rem}
-.q footer small{display:block}
-.lk{border:1px solid var(--line);background:none;color:var(--mut);border-radius:99px;padding:4px 14px;cursor:pointer;font:600 .85rem Nunito}
-.lk.on{background:var(--teal);color:#fff;border-color:var(--teal)}
-.tag.k{background:var(--line);color:var(--teal)}
-#gate{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:linear-gradient(160deg,#47102a,#8a1f50 65%,#b8416f);padding:20px}
-.gbox{background:var(--card);border-radius:20px;padding:30px;max-width:390px;width:100%;text-align:center;border-top:3px solid var(--gold);box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.pick{display:flex;gap:10px;margin:16px 0 12px}
-.pick button{flex:1;padding:12px;border:1.5px solid var(--line);background:none;border-radius:12px;font:700 1.25rem 'Cormorant Garamond',serif;color:var(--ink);cursor:pointer}
-.pick button.on{border-color:var(--teal);background:var(--teal);color:#fff}
-.err{color:var(--warn);font-size:.88rem;min-height:1.3em;margin:8px 0 0}
-.lock header,.lock main{display:none}
-.ic{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none}
-h2 .ic{margin-right:9px;color:var(--gold);vertical-align:-.15em}
-nav button .ic{margin-right:7px;vertical-align:-.25em}
-.btn .ic{margin-right:8px;vertical-align:-.25em}
-.sic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--teal);margin-bottom:10px}
-.sic .ic{width:22px;height:22px}
-.x .ic{width:1.1rem;height:1.1rem}
-.lk .ic{width:1em;height:1em;vertical-align:-.15em}
-.lk.on .ic{fill:currentColor}
-.fil button .ic{margin-right:5px}
-.hero .ic{margin-right:4px}
+:root{--bg:#f6f3ea;--surface:#fffefb;--ink:#1d2b25;--mute:#66756d;--line:#e4dfd0;--em:#0f6b4f;--em-d:#0a4f3a;--sage:#dfe9df;--sage-d:#b9cfbf;--ok:#0f6b4f;--ok-bg:#dcefe4;--mid:#8a6410;--mid-bg:#f6ebc9;--bad:#a2432f;--bad-bg:#f6dcd4;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a16;--surface:#1a2520;--ink:#e8efe9;--mute:#9bb0a4;--line:#2b3a33;--em:#4fc196;--em-d:#7fd8b4;--sage:#22332b;--sage-d:#36503f;--ok:#7fd8b4;--ok-bg:#1f3a2e;--mid:#e5c15c;--mid-bg:#3a3217;--bad:#ee9a86;--bad-bg:#40231c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121a16;--surface:#1a2520;--ink:#e8efe9;--mute:#9bb0a4;--line:#2b3a33;--em:#4fc196;--em-d:#7fd8b4;--sage:#22332b;--sage-d:#36503f;--ok:#7fd8b4;--ok-bg:#1f3a2e;--mid:#e5c15c;--mid-bg:#3a3217;--bad:#ee9a86;--bad-bg:#40231c;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--em);outline-offset:2px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:var(--em-d);color:#eaf4ee;padding:28px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{font-family:Amiri,serif;font-size:30px;line-height:1.1;margin:0 8px 2px}
+.brand-sub{font-size:13px;opacity:.75;margin:0 8px 24px}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{display:flex;align-items:center;gap:12px;background:none;border:0;color:inherit;padding:11px 12px;border-radius:10px;cursor:pointer;text-align:left;font-weight:500}
+nav button svg{width:20px;height:20px;flex:none}
+nav button:hover{background:rgba(255,255,255,.08)}
+nav button[aria-current=page]{background:#f6f3ea;color:#0a4f3a;font-weight:700}
+.side-foot{margin-top:auto;font-size:13px;opacity:.8;padding:0 8px}
+main{padding:32px clamp(16px,4vw,48px) 48px;max-width:1100px;width:100%}
+h1{font-family:Amiri,serif;font-size:clamp(30px,5vw,40px);margin:0 0 4px;line-height:1.15;color:var(--em-d)}
+:root[data-theme="dark"] h1{color:var(--em-d)}
+.lead{color:var(--mute);margin:0 0 24px;max-width:60ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:18px}
+.stat b{display:block;font-size:34px;line-height:1.1;color:var(--em-d);font-weight:700}
+.stat span{color:var(--mute);font-size:14px}
+.stat.main{background:var(--em-d);border-color:var(--em-d);color:#eaf4ee}.stat.main b{color:#fff}.stat.main span{color:#c6dccf}
+.bar{height:10px;background:var(--sage);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--em);border-radius:99px}
+.stat.main .bar{background:rgba(255,255,255,.2)}.stat.main .bar i{background:#bfe6cf}
+h2{font-size:18px;margin:0 0 12px}
+.list{display:flex;flex-direction:column}
+.row{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row small{color:var(--mute);display:block}
+.chip{display:inline-block;font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.Lancar{background:var(--ok-bg);color:var(--ok)}.Cukup{background:var(--mid-bg);color:var(--mid)}.Ulang{background:var(--bad-bg);color:var(--bad)}
+.tag{background:var(--sage);color:var(--em-d);font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px}
+.btn{border:1px solid var(--em);background:var(--em);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer}
+:root[data-theme="dark"] .btn{color:#0b1712}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#0b1712}}
+.btn.ghost{background:transparent;color:var(--em-d);border-color:var(--sage-d)}
+.btn.sm{padding:5px 12px;font-size:14px}.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad-bg)}
+.btn:hover{filter:brightness(1.07)}
+.bar-tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.bar-tools>*{flex:1 1 160px}.bar-tools .grow{flex:3 1 240px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+textarea{min-height:92px;resize:vertical}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:5px}
+.form{grid-template-columns:repeat(2,1fr)}.form .full{grid-column:1/-1}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{margin:0;font-weight:500}
+.seg input{position:absolute;opacity:0;width:0}
+.seg span{display:block;padding:9px 16px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--surface)}
+.seg input:checked+span{background:var(--sage);border-color:var(--em);color:var(--em-d);font-weight:700}
+.seg input:focus-visible+span{outline:3px solid var(--em)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
+th{color:var(--mute);font-weight:600;font-size:13px}
+td.act{white-space:nowrap;text-align:right}
+.empty{text-align:center;color:var(--mute);padding:32px 12px}
+.pgrid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.pcard{cursor:pointer;text-align:left;width:100%}.pcard:hover{border-color:var(--em)}
+.pcard h3{margin:0 0 2px}
+.back{background:none;border:0;color:var(--em-d);cursor:pointer;font-weight:600;padding:0;margin-bottom:12px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--em-d);color:#fff;padding:10px 18px;border-radius:99px;font-weight:600;z-index:30}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);max-width:380px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.dlg-act{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
+#print{display:none}
+@media (max-width:820px){
+.app{display:block}
+aside{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:20}
+.brand,.brand-sub,.side-foot{display:none}
+nav{flex-direction:row;width:100%;justify-content:space-around}
+nav button{flex-direction:column;gap:2px;font-size:12px;padding:6px 8px;flex:1;align-items:center}
+main{padding-bottom:96px;padding-top:24px}
+.form{grid-template-columns:1fr}
+}
+@media print{
+body{background:#fff;color:#000}.app{display:none}#print{display:block;font-family:Figtree,sans-serif}
+#print h1{color:#0a4f3a}#print table{min-width:0}#print th,#print td{font-size:12px;border-bottom:1px solid #bbb}
+}
 </style>
 </head>
-<body class="lock">
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol><symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M8 16H3v5"/></symbol><symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/></symbol><symbol id="i-quote" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol><symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol><symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol><symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16"/><path d="M4 15h16"/><path d="M10 3 8 21"/><path d="m16 3-2 18"/></symbol><symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol><symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol><symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol><symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></symbol></defs></svg>
-<div id="gate"><form class="gbox" id="gForm">
-  <div class="sic" style="margin:0 auto 8px"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></div>
-  <p class="bis" style="font-size:1.7rem;margin:0">بِسْمِ اللَّهِ</p>
-  <h2 id="gTitle" style="margin:0"></h2>
-  <p class="stat"><span id="gSub"></span></p>
-  <div class="pick"><button type="button" data-w="Reski">Reski</button><button type="button" data-w="Ima">Ima</button></div>
-  <input id="gPass" type="password" placeholder="Sandi" autocomplete="current-password">
-  <input id="gPass2" type="password" placeholder="Ulangi sandi" style="margin-top:10px">
-  <p class="err" id="gErr"></p>
-  <button class="btn" style="width:100%;margin-top:4px" id="gBtn">Masuk</button>
-</form></div>
-<header class="hero"><div class="in">
-  <div class="who" id="who"></div>
-  <p class="bis">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-  <h1>Setoran Hafalan Reski Mainake & Ima</h1>
-  <p class="sub">Saling menyimak, saling menguatkan hafalan.</p>
-  <nav role="tablist">
-    <button role="tab" data-t="dash" aria-selected="true"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Dashboard</button>
-    <button role="tab" data-t="setor" aria-selected="false"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Setoran</button>
-    <button role="tab" data-t="mur" aria-selected="false"><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg>Murajaah</button>
-    <button role="tab" data-t="aud" aria-selected="false"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg>Rekaman</button>
-    <button role="tab" data-t="cat" aria-selected="false"><svg class="ic" aria-hidden="true"><use href="#i-quote"/></svg>Catatan Bersama</button>
-  </nav>
-</div></header>
-<main>
-
-<!-- DASHBOARD -->
-<section id="dash" class="on">
-  <div class="grid">
-    <div class="card stat"><div class="sic"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg></div><b id="sJuz">0</b><span>juz (perkiraan dari ayat yang disetor)</span></div>
-    <div class="card stat"><div class="sic"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></div><b id="sSur">0</b><span>surah selesai dari 114</span></div>
-    <div class="card stat"><div class="sic"><svg class="ic" aria-hidden="true"><use href="#i-hash"/></svg></div><b id="sAyat">0</b><span>ayat dari 6.236</span></div>
-  </div>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>Target hafalan</h2>
-    <div class="row" style="align-items:end">
-      <div><label for="tJuz">Target (juz)</label><input id="tJuz" type="number" min="1" max="30" value="1"></div>
-      <div><span id="tPct" class="streak">0%</span></div>
-    </div>
-    <div class="bar"><i id="tBar"></i></div>
-    <span class="stat"><span id="tTxt"></span></span>
-  </div>
-  <div class="grid">
-    <div class="card"><h2 class="reski"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg>Streak Reski</h2><div class="streak reski" id="stR">0 hari</div><span class="stat"><span id="stRl"></span></span></div>
-    <div class="card"><h2 class="ima"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg>Streak Ima</h2><div class="streak ima" id="stI">0 hari</div><span class="stat"><span id="stIl"></span></span></div>
-  </div>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Daftar 114 surah</h2>
-    <div class="fil" id="fil">
-      <button data-f="all" class="on">Semua</button><button data-f="done">Sudah</button><button data-f="part">Sebagian</button><button data-f="none">Belum</button>
-      <span class="cnt" id="fcnt"></span>
-    </div>
-    <div class="sl" id="peta"></div>
-    <p class="stat"><span>Tanda centang emas muncul otomatis saat seluruh ayat satu surah sudah disetor.</span></p>
-  </div>
-</section>
-
-<!-- SETORAN -->
-<section id="setor">
-  <form class="card" id="fSetor">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-edit"/></svg>Catat setoran baru</h2>
-    <div class="row">
-      <div><label for="fTgl">Tanggal</label><input id="fTgl" type="date" required></div>
-      <div><label for="fPen">Penyetor</label><select id="fPen"><option>Reski</option><option>Ima</option></select></div>
-      <div><label for="fSim">Penyimak</label><select id="fSim"><option>Ima</option><option>Reski</option></select></div>
-    </div>
-    <div class="row">
-      <div><label for="fSur">Surah</label><select id="fSur"></select></div>
-      <div><label for="fDari">Dari ayat</label><input id="fDari" type="number" min="1" value="1" required></div>
-      <div><label for="fSampai">Sampai ayat</label><input id="fSampai" type="number" min="1" value="1" required></div>
-      <div><label for="fSt">Status</label><select id="fSt"><option>Lancar</option><option>Perlu Murajaah</option></select></div>
-    </div>
-    <label for="fCat">Catatan koreksi</label>
-    <textarea id="fCat" rows="2" placeholder="Contoh: ayat 5 tertukar dengan ayat 9, panjang mad kurang"></textarea>
-    <button class="btn" type="submit"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Simpan setoran</button>
-    <p class="stat"><span>Setoran berstatus "Perlu Murajaah" otomatis masuk ke daftar murajaah.</span></p>
-  </form>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Riwayat setoran</h2>
-    <div class="tbl"><table><thead><tr><th>Tanggal</th><th>Penyetor → Penyimak</th><th>Surah & ayat</th><th>Status</th><th>Catatan</th><th></th></tr></thead><tbody id="riwayat"></tbody></table></div>
-  </div>
-</section>
-
-<!-- MURAJAAH -->
-<section id="mur">
-  <form class="card" id="fMur">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Tambah hafalan lama</h2>
-    <div class="row">
-      <div><label for="mSur">Surah</label><select id="mSur"></select></div>
-      <div><label for="mDari">Dari ayat</label><input id="mDari" type="number" min="1" value="1"></div>
-      <div><label for="mSampai">Sampai ayat</label><input id="mSampai" type="number" min="1" value="1"></div>
-      <div><label for="mInt">Ulang tiap (hari)</label><input id="mInt" type="number" min="1" value="7"></div>
-    </div>
-    <button class="btn" type="submit"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Tambah ke jadwal</button>
-  </form>
-  <div class="card"><h2><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg>Jadwal murajaah</h2><div id="murList"></div></div>
-</section>
-
-<!-- AUDIO -->
-<section id="aud">
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg>Rekam voice note setoran (opsional)</h2>
-    <div class="row">
-      <div><label for="aWho">Pelantun</label><select id="aWho"><option>Reski</option><option>Ima</option></select></div>
-      <div><label for="aLab">Keterangan</label><input id="aLab" placeholder="Contoh: Al-Mulk 1-10"></div>
-    </div>
-    <button class="btn rec" id="recBtn" type="button"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg>Mulai rekam</button>
-    <span id="recSt" class="stat"><span></span></span>
-    <p class="stat"><span>Rekaman tersimpan di browser ini (batas penyimpanan sekitar 5 MB, jadi simpan yang penting saja). Browser akan meminta izin mikrofon.</span></p>
-  </div>
-  <div class="card"><h2><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg>Daftar rekaman</h2><div id="audList"></div></div>
-</section>
-
-<!-- CATATAN -->
-<section id="cat">
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>Target bersama</h2>
-    <textarea id="cTarget" rows="3" placeholder="Contoh: Selesai Juz 30 sebelum Ramadan, setor 5 ayat tiap hari."></textarea>
-  </div>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-quote"/></svg>Quotes bersama</h2>
-    <form id="fQ">
-      <label for="qText">Tulis quote, pengingat, atau catatan untuk satu sama lain</label>
-      <textarea id="qText" rows="3" required placeholder="Contoh: Ayat yang sulit dihafal itu bukan tanda gagal, tapi tanda sedang dilatih."></textarea>
-      <div class="row">
-        <div><label for="qSrc">Sumber (opsional)</label><input id="qSrc" placeholder="Contoh: QS. Al-Hasyr 21"></div>
-        <div><label for="qKat">Kategori</label><select id="qKat"><option>Motivasi</option><option>Mutasyabihat</option><option>Tajwid</option><option>Doa</option><option>Lainnya</option></select></div>
-        <div><label for="qFile">Gambar (opsional)</label><input id="qFile" type="file" accept="image/*"></div>
-      </div>
-      <img id="qPrev" alt="Pratinjau gambar" style="display:none;max-width:160px;border-radius:10px;margin-top:10px">
-      <button class="btn" type="submit"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg>Bagikan quote</button>
-    </form>
-  </div>
-  <div class="fil" id="qfil"></div>
-  <div id="qList"></div>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg>Doa penguat hafalan</h2>
-    <p class="ar">رَبِّ زِدْنِي عِلْمًا</p>
-    <p class="ar">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي</p>
-    <label for="cDoa">Doa & pengingat tambahan</label>
-    <textarea id="cDoa" rows="3" placeholder="Tulis doa atau pesan penyemangat untuk satu sama lain."></textarea>
-  </div>
-  <div class="card">
-    <h2><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg>Cadangan & gabung data</h2>
-    <p class="stat"><span>Data tersimpan di browser masing-masing. Ekspor data Anda, kirim ke pasangan, lalu impor di perangkatnya. Isi kedua pihak akan digabung tanpa saling menimpa.</span></p>
-    <button class="btn alt" id="exp" type="button"><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg>Ekspor data</button>
-    <label class="btn alt" style="display:inline-block;margin-left:8px;padding:10px 20px;cursor:pointer;font-weight:700;font-size:.95rem;color:var(--teal)"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>Impor data<input id="imp" type="file" accept="application/json" hidden></label>
-  </div>
-</section>
-</main>
+<body>
+<div class="app">
+<aside>
+  <p class="brand">Buku Setoran</p>
+  <p class="brand-sub">Catatan hafalan Al-Qur’an</p>
+  <nav id="nav"></nav>
+  <p class="side-foot">Data tersimpan otomatis di perangkat ini.</p>
+</aside>
+<main id="view"></main>
+</div>
+<div id="print"></div>
+<dialog id="dlg"><p id="dlgMsg" style="margin:0"></p><div class="dlg-act"><button class="btn ghost sm" id="dlgNo">Batal</button><button class="btn sm" id="dlgYes">Hapus</button></div></dialog>
 
 <script>
-const S=[["Al-Fatihah",7],["Al-Baqarah",286],["Ali 'Imran",200],["An-Nisa'",176],["Al-Ma'idah",120],["Al-An'am",165],["Al-A'raf",206],["Al-Anfal",75],["At-Taubah",129],["Yunus",109],["Hud",123],["Yusuf",111],["Ar-Ra'd",43],["Ibrahim",52],["Al-Hijr",99],["An-Nahl",128],["Al-Isra'",111],["Al-Kahfi",110],["Maryam",98],["Ta-Ha",135],["Al-Anbiya'",112],["Al-Hajj",78],["Al-Mu'minun",118],["An-Nur",64],["Al-Furqan",77],["Asy-Syu'ara'",227],["An-Naml",93],["Al-Qasas",88],["Al-'Ankabut",69],["Ar-Rum",60],["Luqman",34],["As-Sajdah",30],["Al-Ahzab",73],["Saba'",54],["Fatir",45],["Yasin",83],["As-Saffat",182],["Sad",88],["Az-Zumar",75],["Ghafir",85],["Fussilat",54],["Asy-Syura",53],["Az-Zukhruf",89],["Ad-Dukhan",59],["Al-Jasiyah",37],["Al-Ahqaf",35],["Muhammad",38],["Al-Fath",29],["Al-Hujurat",18],["Qaf",45],["Adz-Dzariyat",60],["At-Tur",49],["An-Najm",62],["Al-Qamar",55],["Ar-Rahman",78],["Al-Waqi'ah",96],["Al-Hadid",29],["Al-Mujadilah",22],["Al-Hasyr",24],["Al-Mumtahanah",13],["As-Saff",14],["Al-Jumu'ah",11],["Al-Munafiqun",11],["At-Taghabun",18],["At-Talaq",12],["At-Tahrim",12],["Al-Mulk",30],["Al-Qalam",52],["Al-Haqqah",52],["Al-Ma'arij",44],["Nuh",28],["Al-Jinn",28],["Al-Muzzammil",20],["Al-Muddassir",56],["Al-Qiyamah",40],["Al-Insan",31],["Al-Mursalat",50],["An-Naba'",40],["An-Nazi'at",46],["'Abasa",42],["At-Takwir",29],["Al-Infitar",19],["Al-Mutaffifin",36],["Al-Insyiqaq",25],["Al-Buruj",22],["At-Tariq",17],["Al-A'la",19],["Al-Gasyiyah",26],["Al-Fajr",30],["Al-Balad",20],["Asy-Syams",15],["Al-Lail",21],["Ad-Duha",11],["Asy-Syarh",8],["At-Tin",8],["Al-'Alaq",19],["Al-Qadr",5],["Al-Bayyinah",8],["Az-Zalzalah",8],["Al-'Adiyat",11],["Al-Qari'ah",11],["At-Takasur",8],["Al-'Asr",3],["Al-Humazah",9],["Al-Fil",5],["Quraisy",4],["Al-Ma'un",7],["Al-Kausar",3],["Al-Kafirun",6],["An-Nasr",3],["Al-Lahab",5],["Al-Ikhlas",4],["Al-Falaq",5],["An-Nas",6]];
-const ic=n=>`<svg class="ic" aria-hidden="true"><use href="#i-${n}"/></svg>`;
-const KEY="hafalan-reski-ima-v1";
-let D={setoran:[],murajaah:[],audio:[],mut:[],quotes:[],target:"",doa:"",targetJuz:1};
-try{const r=localStorage.getItem(KEY);if(r)D=Object.assign(D,JSON.parse(r))}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(D));return true}catch(e){alert("Penyimpanan penuh. Hapus rekaman lama untuk memberi ruang.");return false}}
+const KEY="setoran-hafalan-v1";
+const NILAI=["Lancar","Cukup Lancar","Perlu Diulang"];
+const nCls=n=>n==="Lancar"?"Lancar":n==="Cukup Lancar"?"Cukup":"Ulang";
+const ICON={dash:'<path d="M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',add:'<path d="M12 5v14M5 12h14"/>',hist:'<path d="M4 6h16M4 12h16M4 18h10"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'};
+const TABS=[["dash","Ringkasan"],["add","Setor"],["hist","Riwayat"],["user","Peserta"]];
+let S={peserta:[],setoran:[]},tab="dash",editId=null,selP=null,flt={q:"",nilai:"",jenis:""};
+
+function today(){const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+function seed(){
+  S.peserta=[{id:"p1",nama:"Ahmad Fauzi",target:600},{id:"p2",nama:"Siti Aisyah",target:400},{id:"p3",nama:"Muhammad Rizky",target:300}];
+  S.setoran=[
+   {id:"s1",pid:"p1",jenis:"Ziyadah",materi:"Surah Al-Mulk ayat 1–15",ayat:15,tgl:daysAgo(1),nilai:"Lancar",catatan:"Mad thabi’i di ayat 3 perlu lebih panjang."},
+   {id:"s2",pid:"p2",jenis:"Muroja'ah",materi:"Juz 30 (An-Naba–An-Nazi’at)",ayat:0,tgl:daysAgo(2),nilai:"Cukup Lancar",catatan:"Ragu pada akhir ayat di Surah An-Naba."},
+   {id:"s3",pid:"p3",jenis:"Ziyadah",materi:"Surah Al-Qalam ayat 1–20",ayat:20,tgl:daysAgo(3),nilai:"Perlu Diulang",catatan:"Ulangi ayat 10–20, perhatikan ikhfa’."},
+   {id:"s4",pid:"p1",jenis:"Ziyadah",materi:"Surah Al-Mulk ayat 16–30",ayat:15,tgl:daysAgo(9),nilai:"Lancar",catatan:""}];
+}
+function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);return}}catch(e){}seed();save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pName=id=>(S.peserta.find(p=>p.id===id)||{nama:"(dihapus)"}).nama;
+const fmt=d=>new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
+const sorted=a=>[...a].sort((x,y)=>y.tgl.localeCompare(x.tgl)||y.id.localeCompare(x.id));
+const ayatOf=l=>l.filter(s=>s.jenis==="Ziyadah").reduce((a,s)=>a+(+s.ayat||0),0);
+function weekStart(){const d=new Date(),k=(d.getDay()+6)%7;return daysAgo(k)}
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;t.setAttribute("role","status");document.body.append(t);setTimeout(()=>t.remove(),2200)}
+function ask(msg,yes="Hapus"){return new Promise(r=>{dlgMsg.textContent=msg;dlgYes.textContent=yes;const d=$("dlg");d.showModal();const done=v=>{d.close();r(v)};dlgYes.onclick=()=>done(true);dlgNo.onclick=()=>done(false)})}
 const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const iso=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
-const today=()=>iso(new Date());
-const fmt=s=>new Date(s+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const daysAgo=s=>Math.round((new Date(today()+"T00:00:00")-new Date(s+"T00:00:00"))/864e5);
 
-// tabs
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===b.dataset.t));
-});
-
-// selects & range limits
-["fSur","mSur"].forEach(id=>$(id).innerHTML=S.map((s,i)=>`<option value="${i}">${i+1}. ${esc(s[0])} (${s[1]} ayat)</option>`).join(""));
-function limit(sel,a,b){const n=S[$(sel).value][1];$(a).max=n;$(b).max=n;if(+$(b).value>n)$(b).value=n;if(+$(a).value>n)$(a).value=n}
-$("fSur").onchange=()=>limit("fSur","fDari","fSampai");$("mSur").onchange=()=>limit("mSur","mDari","mSampai");
-$("fTgl").value=today();
-$("fPen").onchange=()=>{$("fSim").value=$("fPen").value==="Reski"?"Ima":"Reski"};
-
-// setoran
-$("fSetor").onsubmit=e=>{
-  e.preventDefault();
-  const s=+$("fSur").value,a=+$("fDari").value,b=+$("fSampai").value,n=S[s][1];
-  if(a>b||b>n){alert("Rentang ayat tidak valid. "+S[s][0]+" memiliki "+n+" ayat.");return}
-  if($("fPen").value===$("fSim").value){alert("Penyetor dan penyimak harus orang yang berbeda.");return}
-  const r={id:uid(),tgl:$("fTgl").value,pen:$("fPen").value,sim:$("fSim").value,s,a,b,st:$("fSt").value,cat:$("fCat").value.trim()};
-  D.setoran.push(r);
-  if(r.st==="Perlu Murajaah")addMur(s,a,b,3,null);
-  if(save()){$("fCat").value="";render()}
-};
-function addMur(s,a,b,iv,last){
-  if(D.murajaah.some(m=>m.s===s&&m.a===a&&m.b===b))return;
-  D.murajaah.push({id:uid(),s,a,b,iv,last});
+function renderNav(){
+  $("nav").innerHTML=TABS.map(([k,l])=>`<button data-t="${k}" ${tab===k?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>${l}</button>`).join("");
+  $("nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(b.dataset.t==="add")editId=null;go(b.dataset.t)});
 }
-function del(list,id){if(confirm("Hapus data ini?")){D[list]=D[list].filter(x=>x.id!==id);save();render()}}
+function go(t){tab=t;if(t!=="user")selP=null;render();window.scrollTo(0,0)}
+function render(){renderNav();({dash,add:formView,hist,user:pesertaView})[tab]()}
 
-// murajaah
-$("fMur").onsubmit=e=>{
-  e.preventDefault();
-  const s=+$("mSur").value,a=+$("mDari").value,b=+$("mSampai").value;
-  if(a>b||b>S[s][1]){alert("Rentang ayat tidak valid.");return}
-  addMur(s,a,b,+$("mInt").value||7,null);save();render();
-};
-function done(id){const m=D.murajaah.find(x=>x.id===id);m.last=today();save();render()}
-
-// audio
-let rec,chunks=[],stream;
-$("recBtn").onclick=async()=>{
-  const st=$("recSt").firstChild;
-  if(rec&&rec.state==="recording"){rec.stop();return}
-  if(!navigator.mediaDevices||!window.MediaRecorder){alert("Browser ini belum mendukung perekaman audio.");return}
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){alert("Izin mikrofon ditolak. Aktifkan izin mikrofon di pengaturan browser.");return}
-  chunks=[];rec=new MediaRecorder(stream);
-  rec.ondataavailable=e=>chunks.push(e.data);
-  rec.onstop=()=>{
-    stream.getTracks().forEach(t=>t.stop());
-    const blob=new Blob(chunks,{type:rec.mimeType});
-    const fr=new FileReader();
-    fr.onload=()=>{
-      D.audio.push({id:uid(),tgl:today(),who:$("aWho").value,lab:$("aLab").value.trim()||"Tanpa keterangan",src:fr.result});
-      if(!save())D.audio.pop();
-      $("aLab").value="";$("recBtn").innerHTML=ic("mic")+"Mulai rekam";st.textContent="";render();
-    };
-    fr.readAsDataURL(blob);
-  };
-  rec.start();$("recBtn").innerHTML=ic("check")+"Selesai & simpan";st.textContent=" Sedang merekam...";
-};
-
-// catatan
-$("cTarget").value=D.target;$("cDoa").value=D.doa;$("tJuz").value=D.targetJuz;
-$("cTarget").oninput=()=>{D.target=$("cTarget").value;save()};
-$("cDoa").oninput=()=>{D.doa=$("cDoa").value;save()};
-$("tJuz").oninput=()=>{D.targetJuz=Math.max(1,Math.min(30,+$("tJuz").value||1));save();render()};
-
-// hitung progres
-function cover(){
-  const c=S.map(s=>new Set());
-  D.setoran.forEach(r=>{for(let i=r.a;i<=r.b;i++)c[r.s].add(i)});
-  return c;
-}
-function streak(name){
-  const days=new Set(D.setoran.filter(r=>r.pen===name).map(r=>r.tgl));
-  let d=new Date(today()+"T00:00:00"),n=0;
-  if(!days.has(iso(d)))d.setDate(d.getDate()-1);
-  while(days.has(iso(d))){n++;d.setDate(d.getDate()-1)}
-  return {n,done:days.has(today())};
+function chip(n){return `<span class="chip ${nCls(n)}">${esc(n)}</span>`}
+function dash(){
+  const tot=S.setoran.length,ay=ayatOf(S.setoran),tg=S.peserta.reduce((a,p)=>a+(+p.target||0),0);
+  const pct=tg?Math.min(100,Math.round(ay/tg*100)):0;
+  const ws=weekStart(),wk=S.setoran.filter(s=>s.tgl>=ws).length;
+  const rec=sorted(S.setoran).slice(0,6);
+  $("view").innerHTML=`
+  <h1>Assalamu’alaikum</h1><p class="lead">Ringkasan setoran hafalan seluruh peserta.</p>
+  <div class="grid stats">
+   <div class="card stat main"><b>${ay}</b><span>ayat baru (Ziyadah) disetorkan</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+   <div class="card stat"><b>${pct}%</b><span>capaian dari target ${tg} ayat</span></div>
+   <div class="card stat"><b>${wk}</b><span>setoran minggu ini</span></div>
+   <div class="card stat"><b>${tot}</b><span>total catatan setoran</span></div>
+  </div>
+  <div class="card"><div class="head"><h2>Setoran terbaru</h2><button class="btn sm" id="n">Catat setoran</button></div>
+  <div class="list">${rec.length?rec.map(s=>`<div class="row"><div><strong>${esc(pName(s.pid))}</strong> <span class="tag">${esc(s.jenis)}</span><small>${esc(s.materi)} · ${fmt(s.tgl)}</small></div>${chip(s.nilai)}</div>`).join(""):'<div class="empty">Belum ada setoran. Catat setoran pertama.</div>'}</div></div>`;
+  $("n").onclick=()=>{editId=null;go("add")};
 }
 
-let FIL="all";
-document.querySelectorAll("#fil button").forEach(b=>b.onclick=()=>{FIL=b.dataset.f;document.querySelectorAll("#fil button").forEach(x=>x.classList.toggle("on",x===b));render()});
-function render(){
-  const c=cover(),ayat=c.reduce((t,x)=>t+x.size,0);
-  const full=c.filter((x,i)=>x.size===S[i][1]).length;
-  const juz=ayat/6236*30,pct=Math.min(100,Math.round(juz/D.targetJuz*100));
-  $("sJuz").textContent=juz.toFixed(1).replace(".",",");$("sSur").textContent=full;$("sAyat").textContent=ayat.toLocaleString("id-ID");
-  $("tPct").textContent=pct+"%";$("tBar").style.width=pct+"%";
-  $("tTxt").textContent=juz.toFixed(1).replace(".",",")+" dari "+D.targetJuz+" juz tercapai";
-  const st=S.map((s,i)=>c[i].size===s[1]?"done":c[i].size?"part":"none");
-  $("peta").innerHTML=S.map((s,i)=>{
-    if(FIL!=="all"&&st[i]!==FIL)return "";
-    const n=c[i].size,pc=Math.round(n/s[1]*100);
-    return `<div class="sr ${st[i]}"><span class="no">${i+1}</span><div class="nm">${esc(s[0])}<small>${n?n+" / "+s[1]+" ayat":s[1]+" ayat"}</small>${st[i]==="part"?`<div class="mini"><i style="width:${pc}%"></i></div>`:""}</div><span class="ck">${st[i]==="done"?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7.5l3 3 6-7"/></svg>':""}</span></div>`}).join("");
-  $("fcnt").textContent=full+" dari 114 surah selesai";
-  [["R","Reski"],["I","Ima"]].forEach(([k,n])=>{
-    const s=streak(n);$("st"+k).textContent=s.n+" hari";
-    $("st"+k+"l").textContent=s.done?"Sudah setor hari ini":"Belum setor hari ini";
-  });
-  // riwayat
-  const rs=[...D.setoran].sort((a,b)=>b.tgl.localeCompare(a.tgl));
-  $("riwayat").innerHTML=rs.length?rs.map(r=>`<tr><td>${fmt(r.tgl)}</td><td>${r.pen} → ${r.sim}</td><td>${esc(S[r.s][0])} : ${r.a}${r.b>r.a?"–"+r.b:""}</td><td><span class="tag ${r.st==="Lancar"?"l":"m"}">${r.st}</span></td><td>${esc(r.cat)||"-"}</td><td><button class="x" aria-label="Hapus" onclick="del('setoran','${r.id}')">${ic("trash")}</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Belum ada setoran. Isi formulir di atas untuk mencatat setoran pertama.</td></tr>`;
-  // murajaah
-  const ms=[...D.murajaah].sort((a,b)=>{const x=a.last?daysAgo(a.last)-a.iv:999,y=b.last?daysAgo(b.last)-b.iv:999;return y-x});
-  $("murList").innerHTML=ms.length?ms.map(m=>{
-    const ago=m.last?daysAgo(m.last):null,late=ago===null||ago>=m.iv;
-    return `<div class="item"><div><b>${esc(S[m.s][0])} : ${m.a}${m.b>m.a?"–"+m.b:""}</b><small>${m.last?"Terakhir diulang "+fmt(m.last)+" ("+ago+" hari lalu)":"Belum pernah diulang"} · target tiap ${m.iv} hari</small>${late?'<small class="late">Waktunya diulang</small>':""}</div><div><button class="btn alt" onclick="done('${m.id}')">${ic("check")}Sudah diulang</button> <button class="x" aria-label="Hapus" onclick="del('murajaah','${m.id}')">${ic("trash")}</button></div></div>`}).join(""):`<p class="empty">Belum ada hafalan di jadwal. Tambahkan di atas, atau setor dengan status "Perlu Murajaah".</p>`;
-  // audio
-  $("audList").innerHTML=D.audio.length?[...D.audio].reverse().map(a=>`<div class="item"><div><b>${esc(a.lab)}</b><small>${esc(a.who)} · ${fmt(a.tgl)}</small></div><div><audio controls src="${a.src}"></audio> <button class="x" aria-label="Hapus" onclick="del('audio','${a.id}')">${ic("trash")}</button></div></div>`).join(""):`<p class="empty">Belum ada rekaman.</p>`;
-  // mutasyabihat
+function formView(){
+  const e=S.setoran.find(s=>s.id===editId)||{pid:S.peserta[0]?.id||"",jenis:"Ziyadah",materi:"",ayat:"",tgl:today(),nilai:"Lancar",catatan:""};
+  if(!S.peserta.length){$("view").innerHTML=`<h1>Setoran baru</h1><div class="card empty">Tambahkan peserta terlebih dahulu.<br><br><button class="btn" id="gp">Ke halaman Peserta</button></div>`;$("gp").onclick=()=>go("user");return}
+  $("view").innerHTML=`<h1>${editId?"Ubah setoran":"Setoran baru"}</h1><p class="lead">Catat hafalan yang baru disetorkan beserta penilaian dan koreksinya.</p>
+  <form class="card grid form" id="f" autocomplete="off">
+   <div><label for="pid">Nama santri</label><select id="pid" required>${S.peserta.map(p=>`<option value="${p.id}" ${p.id===e.pid?"selected":""}>${esc(p.nama)}</option>`).join("")}</select></div>
+   <div><label for="tgl">Tanggal setoran</label><input type="date" id="tgl" required value="${e.tgl}"></div>
+   <div class="full"><label>Jenis hafalan</label><div class="seg">
+    <label><input type="radio" name="j" value="Ziyadah" ${e.jenis==="Ziyadah"?"checked":""}><span>Ziyadah (hafalan baru)</span></label>
+    <label><input type="radio" name="j" value="Muroja'ah" ${e.jenis!=="Ziyadah"?"checked":""}><span>Muroja’ah (mengulang)</span></label></div></div>
+   <div><label for="materi">Materi / surah / ayat</label><input id="materi" required placeholder="Contoh: Surah Al-Mulk ayat 1–15" value="${esc(e.materi)}"></div>
+   <div><label for="ayat">Jumlah ayat baru <small style="font-weight:400;color:var(--mute)">(untuk Ziyadah)</small></label><input type="number" min="0" id="ayat" value="${esc(e.ayat)}" placeholder="15"></div>
+   <div class="full"><label>Penilaian</label><div class="seg">${NILAI.map(n=>`<label><input type="radio" name="n" value="${n}" ${e.nilai===n?"checked":""}><span>${n}</span></label>`).join("")}</div></div>
+   <div class="full"><label for="cat">Catatan / koreksi</label><textarea id="cat" placeholder="Tajwid, makhraj, makna, atau poin perbaikan">${esc(e.catatan)}</textarea></div>
+   <div class="full" style="display:flex;gap:10px"><button class="btn" type="submit">${editId?"Simpan perubahan":"Simpan setoran"}</button>${editId?'<button class="btn ghost" type="button" id="cx">Batal</button>':""}</div>
+  </form>`;
+  if(editId)$("cx").onclick=()=>{editId=null;go("hist")};
+  $("f").onsubmit=ev=>{ev.preventDefault();
+    const jenis=document.querySelector('input[name=j]:checked').value;
+    const o={pid:$("pid").value,jenis,materi:$("materi").value.trim(),ayat:jenis==="Ziyadah"?(+$("ayat").value||0):0,tgl:$("tgl").value,nilai:document.querySelector('input[name=n]:checked').value,catatan:$("cat").value.trim()};
+    if(editId){Object.assign(S.setoran.find(s=>s.id===editId),o);toast("Setoran diperbarui")}else{S.setoran.push({id:uid(),...o});toast("Setoran disimpan")}
+    save();editId=null;go(editId===null&&tab?"hist":"dash")};
 }
-limit("fSur","fDari","fSampai");limit("mSur","mDari","mSampai");
 
-// ---- quotes ----
-let QF="Semua";const KAT=["Semua","Motivasi","Mutasyabihat","Tajwid","Doa","Lainnya"];
-function renderQ(){
-  $("qfil").innerHTML=KAT.map(k=>`<button class="${k===QF?"on":""}" onclick="QF='${k}';renderQ()">${k}</button>`).join("");
-  const qs=D.quotes.filter(q=>QF==="Semua"||q.k===QF).slice().reverse();
-  $("qList").innerHTML=qs.length?qs.map(q=>{const L=q.likes||[];return `<article class="q ${esc(q.by)}"><span class="qm">&ldquo;</span><p class="qt">${esc(q.t)}</p>${q.img?`<img src="${q.img}" alt="Gambar quote">`:""}<footer><div><b>${esc(q.by)}</b> · ${fmt(q.tgl)} · <span class="tag k">${esc(q.k)}</span>${q.src?`<small>${esc(q.src)}</small>`:""}</div><div><button class="lk ${L.includes(ME)?"on":""}" onclick="like('${q.id}')" aria-label="Suka">${ic("heart")} ${L.length||""}</button>${q.by===ME?` <button class="x" aria-label="Hapus" onclick="del('quotes','${q.id}')">${ic("trash")}</button>`:""}</div></footer></article>`}).join(""):`<p class="empty">Belum ada quote. Tulis yang pertama untuk pasangan Anda.</p>`;
+function filtered(){const q=flt.q.toLowerCase();return sorted(S.setoran).filter(s=>(!flt.nilai||s.nilai===flt.nilai)&&(!flt.jenis||s.jenis===flt.jenis)&&(!q||(pName(s.pid)+" "+s.materi).toLowerCase().includes(q)))}
+function rowsHtml(l,acts=true){return l.length?l.map(s=>`<tr><td>${fmt(s.tgl)}</td><td><strong>${esc(pName(s.pid))}</strong></td><td><span class="tag">${esc(s.jenis)}</span></td><td>${esc(s.materi)}${s.jenis==="Ziyadah"&&s.ayat?`<small style="color:var(--mute);display:block">${s.ayat} ayat</small>`:""}</td><td>${chip(s.nilai)}</td><td>${esc(s.catatan)||"–"}</td>${acts?`<td class="act"><button class="btn ghost sm" data-e="${s.id}">Ubah</button> <button class="btn danger sm" data-d="${s.id}">Hapus</button></td>`:""}</tr>`).join(""):`<tr><td colspan="7" class="empty">Tidak ada setoran yang cocok.</td></tr>`}
+const THEAD=a=>`<thead><tr><th>Tanggal</th><th>Santri</th><th>Jenis</th><th>Materi</th><th>Nilai</th><th>Catatan</th>${a?"<th></th>":""}</tr></thead>`;
+function hist(){
+  $("view").innerHTML=`<div class="head"><div><h1>Riwayat setoran</h1><p class="lead" style="margin-bottom:12px">Cari, saring, ubah, atau hapus catatan.</p></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="xc">Ekspor CSV</button><button class="btn ghost sm" id="xj">Ekspor JSON</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button></div></div>
+   <div class="bar-tools"><input class="grow" id="q" type="search" placeholder="Cari nama atau materi" aria-label="Cari" value="${esc(flt.q)}">
+   <select id="fn" aria-label="Penilaian"><option value="">Semua penilaian</option>${NILAI.map(n=>`<option ${flt.nilai===n?"selected":""}>${n}</option>`).join("")}</select>
+   <select id="fj" aria-label="Jenis"><option value="">Semua jenis</option><option ${flt.jenis==="Ziyadah"?"selected":""}>Ziyadah</option><option ${flt.jenis==="Muroja'ah"?"selected":""}>Muroja'ah</option></select></div>
+   <div class="card tbl" style="padding:6px 10px"><table>${THEAD(true)}<tbody id="tb">${rowsHtml(filtered())}</tbody></table></div>`;
+  const body=()=>{$("tb").innerHTML=rowsHtml(filtered());bind()};
+  $("q").oninput=e=>{flt.q=e.target.value;body()};$("fn").onchange=e=>{flt.nilai=e.target.value;body()};$("fj").onchange=e=>{flt.jenis=e.target.value;body()};
+  $("xc").onclick=exportCSV;$("xj").onclick=exportJSON;$("pr").onclick=()=>printRecap(filtered(),"Rekap Setoran Hafalan");
+  const bind=()=>{
+   $("tb").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{editId=b.dataset.e;go("add")});
+   $("tb").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{if(await ask("Hapus setoran ini? Tindakan ini tidak bisa dibatalkan.")){S.setoran=S.setoran.filter(s=>s.id!==b.dataset.d);save();body();toast("Setoran dihapus")}})};
+  bind();
 }
-function like(id){const q=D.quotes.find(x=>x.id===id),L=q.likes=q.likes||[],i=L.indexOf(ME);i<0?L.push(ME):L.splice(i,1);save();renderQ()}
-const _r=render;render=function(){_r();renderQ()};
-let qImg=null;
-$("qFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,720/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);qImg=c.toDataURL("image/jpeg",.72);$("qPrev").src=qImg;$("qPrev").style.display="block"};im.src=fr.result};fr.readAsDataURL(f)};
-$("fQ").onsubmit=e=>{e.preventDefault();D.quotes.push({id:uid(),by:ME,tgl:today(),t:$("qText").value.trim(),src:$("qSrc").value.trim(),k:$("qKat").value,img:qImg,likes:[]});if(!save()){D.quotes.pop();return}$("fQ").reset();qImg=null;$("qPrev").style.display="none";render()};
 
-// ---- cadangan ----
-$("exp").onclick=()=>{const o=Object.assign({},D);delete o.pass;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:"application/json"}));a.download="hafalan-"+today()+".json";a.click()};
-$("imp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const o=JSON.parse(t);["setoran","murajaah","audio","quotes"].forEach(k=>(o[k]||[]).forEach(x=>{const i=D[k].findIndex(y=>y.id===x.id);if(i<0)D[k].push(x);else if(k==="quotes")D[k][i].likes=[...new Set([...(D[k][i].likes||[]),...(x.likes||[])])]}));if(!D.target&&o.target)D.target=o.target;save();$("cTarget").value=D.target;render();alert("Data berhasil digabung.")}catch(err){alert("File tidak valid.")}})};
+function pesertaView(){
+  if(selP&&S.peserta.find(p=>p.id===selP))return detail();
+  $("view").innerHTML=`<h1>Peserta</h1><p class="lead">Lihat progres setiap peserta, atau tambahkan peserta baru.</p>
+  <div class="grid pgrid">${S.peserta.map(p=>{const l=S.setoran.filter(s=>s.pid===p.id),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;return `<button class="card pcard" data-p="${p.id}"><h3>${esc(p.nama)}</h3><small style="color:var(--mute)">${l.length} setoran · ${a} dari ${p.target} ayat</small><div class="bar"><i style="width:${pc}%"></i></div><small style="color:var(--em-d);font-weight:600">${pc}% dari target</small></button>`}).join("")}</div>
+  <form class="card grid form" id="pf" style="margin-top:18px;grid-template-columns:2fr 1fr auto;align-items:end"><div><label for="pn">Nama peserta baru</label><input id="pn" required></div><div><label for="pt">Target (ayat)</label><input id="pt" type="number" min="1" value="300" required></div><button class="btn" type="submit">Tambah</button></form>
+  <p style="margin-top:20px"><button class="btn danger sm" id="rs">Kembalikan data contoh</button></p>`;
+  document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{selP=b.dataset.p;render();scrollTo(0,0)});
+  $("pf").onsubmit=e=>{e.preventDefault();S.peserta.push({id:uid(),nama:$("pn").value.trim(),target:+$("pt").value||300});save();toast("Peserta ditambahkan");render()};
+  $("rs").onclick=async()=>{if(await ask("Semua data diganti dengan data contoh. Lanjutkan?","Ganti")){seed();save();render()}};
+}
+function detail(){
+  const p=S.peserta.find(x=>x.id===selP),l=sorted(S.setoran.filter(s=>s.pid===p.id)),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;
+  const c=n=>l.filter(s=>s.nilai===n).length;
+  $("view").innerHTML=`<button class="back" id="bk">← Semua peserta</button><div class="head"><div><h1>${esc(p.nama)}</h1><p class="lead" style="margin-bottom:12px">${a} dari ${p.target} ayat tercapai (${pc}%)</p></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="et">Ubah target</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button><button class="btn danger sm" id="dp">Hapus peserta</button></div></div>
+   <div class="card" style="margin-bottom:14px"><div class="bar"><i style="width:${pc}%"></i></div>
+   <p style="margin:12px 0 0;display:flex;gap:8px;flex-wrap:wrap"><span class="chip Lancar">Lancar ${c("Lancar")}</span><span class="chip Cukup">Cukup Lancar ${c("Cukup Lancar")}</span><span class="chip Ulang">Perlu Diulang ${c("Perlu Diulang")}</span><span class="tag">Total ${l.length} setoran</span></p></div>
+   <div class="card tbl" style="padding:6px 10px"><table>${THEAD(false)}<tbody>${rowsHtml(l,false).replace(/colspan="7"/,'colspan="6"')}</tbody></table></div>`;
+  $("bk").onclick=()=>{selP=null;render()};
+  $("pr").onclick=()=>printRecap(l,"Rekap Hafalan – "+p.nama);
+  $("et").onclick=()=>{const v=prompt?null:null;const n=+(window.prompt?window.prompt("Target jumlah ayat:",p.target):0);if(n>0){p.target=n;save();render()}};
+  $("dp").onclick=async()=>{if(await ask(`Hapus ${p.nama} beserta seluruh setorannya?`)){S.peserta=S.peserta.filter(x=>x.id!==p.id);S.setoran=S.setoran.filter(s=>s.pid!==p.id);save();selP=null;render()}};
+}
 
-// ---- akses berdua ----
-let ME=null,gWho=null;try{ME=sessionStorage.getItem("hafalan-me")}catch(e){}
-async function hsh(s){s="reski-ima:"+s;try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){let k=5381;for(const c of s)k=(k*33)^c.charCodeAt(0);return "d"+(k>>>0).toString(16)}}
-function gErr(m){$("gErr").textContent=m}
-function showGate(){const n=!D.pass;document.body.classList.add("lock");$("gate").style.display="grid";$("gTitle").textContent=n?"Buat sandi kalian":"Selamat datang";$("gSub").textContent=n?"Pilih namamu, lalu buat sandi yang hanya kalian berdua yang tahu.":"Pilih namamu dan masukkan sandi.";$("gPass2").style.display=n?"block":"none";$("gBtn").textContent=n?"Simpan sandi & masuk":"Masuk"}
-function enter(){document.body.classList.remove("lock");$("gate").style.display="none";const o=ME==="Reski"?"Ima":"Reski";$("fPen").value=ME;$("fSim").value=o;$("aWho").value=ME;$("who").innerHTML=`Masuk sebagai <b>${ME}</b><button id="out" type="button">${ic("logout")}Keluar</button>`;$("out").onclick=()=>{try{sessionStorage.removeItem("hafalan-me")}catch(e){}location.reload()};render()}
-document.querySelectorAll(".pick button").forEach(b=>b.onclick=()=>{gWho=b.dataset.w;document.querySelectorAll(".pick button").forEach(x=>x.classList.toggle("on",x===b));gErr("")});
-$("gForm").onsubmit=async e=>{e.preventDefault();
-  if(!gWho)return gErr("Pilih dulu: Reski atau Ima.");
-  const p=$("gPass").value;if(p.length<4)return gErr("Sandi minimal 4 karakter.");
-  const k=await hsh(p);
-  if(!D.pass){if(p!==$("gPass2").value)return gErr("Pengulangan sandi tidak sama.");D.pass=k;save()}
-  else if(k!==D.pass)return gErr("Sandi salah. Coba lagi.");
-  ME=gWho;try{sessionStorage.setItem("hafalan-me",ME)}catch(e){}enter()};
-ME?enter():showGate();
+async function saveFile(name,text,type){
+  try{const d=await claude.use("downloads");if(d){await d.save({filename:name,data:new Blob([text],{type})});return}}catch(e){if(e&&e.code==="declined")return}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}catch(e){}
+}
+function exportJSON(){saveFile("setoran-hafalan.json",JSON.stringify(S,null,2),"application/json")}
+function exportCSV(){
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const rows=[["Tanggal","Santri","Jenis","Materi","Jumlah ayat","Penilaian","Catatan"],...sorted(S.setoran).map(s=>[s.tgl,pName(s.pid),s.jenis,s.materi,s.ayat,s.nilai,s.catatan])];
+  saveFile("setoran-hafalan.csv","\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n"),"text/csv");
+}
+function recapHtml(l,title){
+  const a=ayatOf(l);
+  return `<h1>${esc(title)}</h1><p>Dicetak ${fmt(today())} · ${l.length} setoran · ${a} ayat baru</p><table>${THEAD(false)}<tbody>${rowsHtml(l,false).replace(/colspan="7"/,'colspan="6"')}</tbody></table>`;
+}
+async function printRecap(l,title){
+  $("print").innerHTML=recapHtml(l,title);
+  try{window.print()}catch(e){}
+  const html=`<!doctype html><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:sans-serif;padding:24px}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #bbb;padding:6px;text-align:left;font-size:13px;vertical-align:top}h1{color:#0a4f3a}</style>`+$("print").innerHTML.replace(/<span class="chip[^>]*>|<span class="tag">|<\/span>/g,"").replace(/<small[^>]*>/g," <small>");
+  if(await ask("Jika dialog cetak tidak muncul, simpan rekap sebagai file HTML lalu cetak dari browser. Simpan file?","Simpan")){saveFile("rekap-hafalan.html",html,"text/html")}
+}
+
+load();render();
 </script>
 </body>
 </html>

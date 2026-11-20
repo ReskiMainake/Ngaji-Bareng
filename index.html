@@ -178,7 +178,7 @@ function dash(){
   const rec=sorted(S.setoran).slice(0,6);
   const quotes=[...S.quotes].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   $("view").innerHTML=`
-  <h1>Assalamu’alaikum</h1><p class="lead">Ringkasan hafalan setoran peserta.</p>
+  <h1>Assalamu’alaikum (🕌)</h1><p class="lead">Ringkasan hafalan setoran peserta, saling belajar dan menguatkan🌻.</p>
   <section class="card" style="margin-bottom:14px">
    <h2>Animasi GIF</h2>
    <p class="quote-meta" style="margin-top:-6px;margin-bottom:12px">Sisipkan satu gambar GIF pilihan Anda. Animasi tersimpan di perangkat ini.</p>
@@ -314,7 +314,7 @@ function hist(){
 }
 
 function pesertaView(){
-  $("view").innerHTML=`<h1>Peserta</h1><p class="lead">Daftar peserta tetap.</p>
+  $("view").innerHTML=`<h1>Peserta</h1><p class="lead">Daftar peserta tetap🪷 </p>
   <div class="grid pgrid">${S.peserta.map(p=>{const l=S.setoran.filter(s=>s.pid===p.id),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;return `<button class="card pcard" data-p="${p.id}"><h3>${esc(p.nama)}</h3><small style="color:var(--mute)">${l.length} setoran · ${a} dari ${p.target} ayat</small><div class="bar"><i style="width:${pc}%"></i></div><small style="color:var(--em-d);font-weight:600">${pc}% dari target</small></button>`}).join("")}</div>`;
   document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{selP=b.dataset.p;render();scrollTo(0,0)});
 }

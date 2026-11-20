@@ -23,27 +23,31 @@
   --mid-bg:#f6ebc9;
   --bad:#a2432f;
   --bad-bg:#f6dcd4;
+  --shadow:0 10px 28px rgba(15,61,46,.06);
+  --shadow-lg:0 18px 42px rgba(10,45,34,.14);
   color-scheme:light;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#111915;
-    --surface:#18231e;
-    --ink:#e8efe9;
+    --bg:#0f1713;
+    --surface:#16201b;
+    --ink:#eaf1ec;
     --mute:#9cb0a5;
-    --line:#293831;
+    --line:#27362f;
     --em:#4bc094;
     --em-d:#7dd7b3;
-    --sage:#203129;
-    --sage-d:#344e3d;
+    --sage:#1e2f27;
+    --sage-d:#324b3c;
     --ok:#7dd7b3;
-    --ok-bg:#1e382c;
+    --ok-bg:#1c352a;
     --mid:#e4c05c;
-    --mid-bg:#383016;
+    --mid-bg:#362e15;
     --bad:#ee9a86;
-    --bad-bg:#3f221b;
+    --bad-bg:#3d201a;
+    --shadow:0 10px 28px rgba(0,0,0,.28);
+    --shadow-lg:0 20px 44px rgba(0,0,0,.45);
     color-scheme:dark;
   }
 }
@@ -51,9 +55,13 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{
   margin:0;
-  background:var(--bg);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(15,107,79,.08), transparent 42%),
+    radial-gradient(circle at 92% 12%, rgba(138,100,16,.06), transparent 38%),
+    var(--bg);
   color:var(--ink);
-  font:15px/1.55 Figtree,system-ui,-apple-system,sans-serif;
+  font:15.5px/1.58 Figtree,system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--em);outline-offset:2px}
@@ -68,27 +76,27 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .login-card{
   width:100%;
-  max-width:420px;
+  max-width:410px;
   background:var(--surface);
   border:1px solid var(--line);
-  border-radius:20px;
-  padding:28px 24px;
-  box-shadow:0 12px 32px rgba(0,0,0,.06);
+  border-radius:22px;
+  padding:30px 26px;
+  box-shadow:var(--shadow-lg);
 }
 .login-brand{
   font-family:Amiri,serif;
   font-size:34px;
-  line-height:1.1;
+  line-height:1.12;
   color:var(--em-d);
   margin:0 0 6px;
 }
 .login-sub{
   color:var(--mute);
-  font-size:14px;
   margin:0 0 22px;
+  font-size:14px;
 }
-.field{margin-bottom:14px}
-.field:last-of-type{margin-bottom:18px}
+.field{margin-bottom:15px}
+.field:last-of-type{margin-bottom:14px}
 label{
   display:block;
   font-weight:600;
@@ -97,17 +105,66 @@ label{
 }
 input,select,textarea{
   width:100%;
-  padding:10px 12px;
+  padding:10.5px 13px;
   border:1px solid var(--line);
-  border-radius:11px;
+  border-radius:12px;
   background:var(--bg);
+  transition:border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 }
-textarea{min-height:88px;resize:vertical}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--em);
+  background:var(--surface);
+  box-shadow:0 0 0 3px rgba(15,107,79,.12);
+}
+.pass-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.pass-wrap input{padding-right:44px}
+.eye-btn{
+  position:absolute;
+  right:8px;
+  background:none;
+  border:0;
+  color:var(--mute);
+  cursor:pointer;
+  padding:6px;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition:color .15s ease, background-color .15s ease;
+}
+.eye-btn:hover{
+  color:var(--ink);
+  background:rgba(0,0,0,.06);
+}
+.remember-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:18px;
+  font-size:13.5px;
+}
+.remember-row input[type="checkbox"]{
+  width:16px;
+  height:16px;
+  margin:0;
+  accent-color:var(--em);
+  cursor:pointer;
+}
+.remember-row label{
+  margin:0;
+  font-weight:500;
+  cursor:pointer;
+}
+textarea{min-height:92px;resize:vertical}
 .err-box{
   background:var(--bad-bg);
   color:var(--bad);
   border:1px solid transparent;
-  border-radius:11px;
+  border-radius:12px;
   padding:10px 12px;
   font-size:13.5px;
   font-weight:600;
@@ -117,23 +174,24 @@ textarea{min-height:88px;resize:vertical}
 /* Tata Letak Utama */
 .app{
   display:grid;
-  grid-template-columns:236px minmax(0,1fr);
+  grid-template-columns:244px minmax(0,1fr);
   min-height:100vh;
 }
 aside{
-  background:var(--em-d);
+  background:linear-gradient(180deg, var(--em-d) 0%, #073c2c 100%);
   color:#eaf4ee;
-  padding:26px 16px;
+  padding:28px 16px;
   position:sticky;
   top:0;
   height:100vh;
   display:flex;
   flex-direction:column;
   gap:8px;
+  box-shadow:4px 0 24px rgba(0,0,0,.06);
 }
 .brand{
   font-family:Amiri,serif;
-  font-size:28px;
+  font-size:30px;
   line-height:1.1;
   margin:0 8px 2px;
 }
@@ -144,13 +202,14 @@ aside{
 }
 .user-pill{
   margin:0 4px 12px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(255,255,255,.1);
+  padding:11px 13px;
+  border-radius:13px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.12);
   font-size:13px;
 }
-.user-pill small{display:block;opacity:.75;font-size:11.5px}
-.user-pill strong{display:block;font-size:14px;margin-top:2px}
+.user-pill small{display:block;opacity:.76;font-size:11.5px;letter-spacing:.02em}
+.user-pill strong{display:block;font-size:14.5px;margin-top:2px}
 nav{display:flex;flex-direction:column;gap:4px}
 nav button{
   display:flex;
@@ -159,19 +218,21 @@ nav button{
   background:none;
   border:0;
   color:inherit;
-  padding:10px 12px;
+  padding:10.5px 12px;
   border-radius:11px;
   cursor:pointer;
   text-align:left;
   font-weight:500;
   font-size:14.5px;
+  transition:background-color .16s ease, transform .16s ease;
 }
 nav button svg{width:19px;height:19px;flex:none}
-nav button:hover{background:rgba(255,255,255,.08)}
+nav button:hover{background:rgba(255,255,255,.1)}
 nav button[aria-current=page]{
-  background:#f6f3ea;
+  background:var(--bg);
   color:#0a4f3a;
   font-weight:700;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
 }
 .side-foot{
   margin-top:auto;
@@ -181,8 +242,8 @@ nav button[aria-current=page]{
 }
 
 main{
-  padding:28px clamp(16px,3.5vw,40px) 52px;
-  max-width:1040px;
+  padding:30px clamp(16px,3.5vw,42px) 56px;
+  max-width:1060px;
   width:100%;
   min-width:0;
 }
@@ -196,8 +257,8 @@ main{
 }
 h1{
   font-family:Amiri,serif;
-  font-size:clamp(28px,4.2vw,38px);
-  line-height:1.15;
+  font-size:clamp(29px,4.2vw,39px);
+  line-height:1.14;
   color:var(--em-d);
   margin:0 0 4px;
 }
@@ -205,7 +266,7 @@ h1{
   color:var(--mute);
   margin:0;
   font-size:14.5px;
-  max-width:58ch;
+  max-width:60ch;
 }
 .top-actions{
   display:flex;
@@ -235,9 +296,11 @@ h2{
 .card{
   background:var(--surface);
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:20px;
+  border-radius:18px;
+  padding:20px 22px;
   min-width:0;
+  box-shadow:var(--shadow);
+  transition:border-color .18s ease, transform .18s ease;
 }
 .stack{display:grid;gap:16px}
 .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -245,46 +308,47 @@ h2{
 
 .stat b{
   display:block;
-  font-size:30px;
-  line-height:1.15;
+  font-size:31px;
+  line-height:1.12;
   font-weight:700;
   color:var(--em-d);
+  letter-spacing:-.02em;
 }
 .stat span{
   display:block;
   font-size:13.5px;
   color:var(--mute);
-  margin-top:4px;
+  margin-top:5px;
 }
 .stat.main{
-  background:var(--em-d);
-  border-color:var(--em-d);
+  background:linear-gradient(135deg, var(--em-d) 0%, var(--em) 100%);
+  border-color:transparent;
   color:#eaf4ee;
 }
 .stat.main b{color:#fff}
-.stat.main span{color:#c9e2d2}
+.stat.main span{color:#d2ebdc}
 
 .bar{
   height:9px;
   background:var(--sage);
   border-radius:999px;
   overflow:hidden;
-  margin-top:10px;
+  margin-top:11px;
 }
 .bar>i{
   display:block;
   height:100%;
-  background:var(--em);
+  background:linear-gradient(90deg, var(--em) 0%, var(--em-d) 100%);
   border-radius:999px;
-  transition:width .25s ease;
+  transition:width .3s ease;
 }
-.stat.main .bar{background:rgba(255,255,255,.2)}
-.stat.main .bar>i{background:#c5e8d2}
+.stat.main .bar{background:rgba(255,255,255,.22)}
+.stat.main .bar>i{background:#d4f0df}
 
 .prog-item{
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:15px;
+  border-radius:15px;
+  padding:16px;
   background:var(--bg);
 }
 .prog-top{
@@ -294,7 +358,7 @@ h2{
   gap:8px;
 }
 .prog-top strong{font-size:15.5px}
-.prog-top span{font-size:13.5px;font-weight:700;color:var(--em-d)}
+.prog-top span{font-size:14px;font-weight:700;color:var(--em-d)}
 .prog-meta{
   font-size:13px;
   color:var(--mute);
@@ -308,8 +372,9 @@ h2{
 }
 .quote-item{
   border:1px solid var(--line);
-  border-radius:13px;
-  padding:14px;
+  border-left:4px solid var(--em);
+  border-radius:14px;
+  padding:14px 16px;
   background:var(--bg);
 }
 .quote-head{
@@ -317,9 +382,9 @@ h2{
   justify-content:space-between;
   align-items:center;
   gap:8px;
-  font-size:13px;
+  font-size:13.5px;
 }
-.quote-time{color:var(--mute);font-size:12.5px}
+.quote-time{color:var(--mute);font-size:12px}
 .quote-body{
   margin:8px 0 12px;
   font-size:15px;
@@ -340,7 +405,9 @@ h2{
   font-size:13px;
   font-weight:600;
   cursor:pointer;
+  transition:all .16s ease;
 }
+.like-btn:hover{border-color:var(--sage-d)}
 .like-btn.liked{
   border-color:#d88b9c;
   background:#fff0f3;
@@ -358,6 +425,39 @@ h2{
 }
 .row:first-child{border-top:0;padding-top:2px}
 .row small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+
+.done-surah-list{
+  display:grid;
+  gap:10px;
+}
+.done-group{
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:13px 15px;
+  background:var(--bg);
+}
+.done-date{
+  font-size:13px;
+  font-weight:700;
+  color:var(--em-d);
+  margin-bottom:8px;
+}
+.done-items{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.done-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 11px;
+  border-radius:999px;
+  background:var(--ok-bg);
+  color:var(--ok);
+  font-size:13px;
+  font-weight:600;
+}
 
 .chip{
   display:inline-block;
@@ -384,8 +484,8 @@ h2{
   border:1px solid var(--em);
   background:var(--em);
   color:#fff;
-  padding:9px 16px;
-  border-radius:10px;
+  padding:9.5px 16px;
+  border-radius:11px;
   font-weight:600;
   font-size:14px;
   cursor:pointer;
@@ -393,11 +493,13 @@ h2{
   align-items:center;
   justify-content:center;
   gap:6px;
+  transition:filter .16s ease, transform .14s ease, background-color .16s ease;
 }
 @media (prefers-color-scheme:dark){
   .btn{color:#091510}
 }
 .btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(1px)}
 .btn.ghost{
   background:transparent;
   color:var(--em-d);
@@ -408,7 +510,7 @@ h2{
   color:#fff;
   border-color:rgba(255,255,255,.22);
 }
-.btn.sm{padding:6px 12px;font-size:13px}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:9px}
 .btn.danger{
   background:transparent;
   color:var(--bad);
@@ -422,9 +524,9 @@ h2{
 }
 .form-grid .full{grid-column:1/-1}
 .readonly-box{
-  padding:10px 12px;
+  padding:10.5px 13px;
   border:1px solid var(--line);
-  border-radius:11px;
+  border-radius:12px;
   background:var(--bg);
   font-weight:600;
 }
@@ -433,11 +535,12 @@ h2{
 .seg input{position:absolute;opacity:0;width:0;height:0}
 .seg span{
   display:block;
-  padding:8px 14px;
+  padding:8.5px 14px;
   border:1px solid var(--line);
-  border-radius:10px;
+  border-radius:11px;
   background:var(--bg);
   cursor:pointer;
+  transition:all .16s ease;
 }
 .seg input:checked+span{
   background:var(--sage);
@@ -462,6 +565,7 @@ th,td{
   font-size:14px;
 }
 th{color:var(--mute);font-weight:600;font-size:12.5px}
+tbody tr:hover{background:rgba(15,107,79,.03)}
 td.act{white-space:nowrap;text-align:right}
 .empty{
   text-align:center;
@@ -491,16 +595,17 @@ td.act{white-space:nowrap;text-align:right}
   font-weight:600;
   font-size:13.5px;
   z-index:50;
-  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  box-shadow:var(--shadow-lg);
 }
 dialog{
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:18px;
   background:var(--surface);
   color:var(--ink);
   max-width:420px;
   width:calc(100% - 32px);
-  padding:20px;
+  padding:22px;
+  box-shadow:var(--shadow-lg);
 }
 dialog::backdrop{background:rgba(0,0,0,.45)}
 .dlg-act{
@@ -523,6 +628,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     flex-direction:row;
     padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));
     z-index:30;
+    box-shadow:0 -4px 20px rgba(0,0,0,.14);
   }
   .brand,.brand-sub,.user-pill,.side-foot{display:none}
   nav{flex-direction:row;width:100%;justify-content:space-around}
@@ -535,6 +641,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     align-items:center;
   }
   main{padding:20px 14px 92px}
+  .card{padding:17px 16px;border-radius:16px}
   .toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
 }
 @media (max-width:600px){
@@ -563,7 +670,19 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     </div>
     <div class="field">
       <label for="loginPass">Sandi</label>
-      <input id="loginPass" type="password" required placeholder="Masukkan sandi">
+      <div class="pass-wrap">
+        <input id="loginPass" type="password" required placeholder="Masukkan sandi">
+        <button class="eye-btn" type="button" id="togglePassBtn" aria-label="Lihat atau sembunyikan sandi" aria-pressed="false">
+          <svg id="eyeIcon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="remember-row">
+      <input id="rememberMe" type="checkbox">
+      <label for="rememberMe">Ingat saya (simpan username & sandi otomatis)</label>
     </div>
     <button class="btn" type="submit" style="width:100%">Masuk</button>
   </form>
@@ -621,6 +740,7 @@ const CREDENTIALS = {
 
 const STORAGE_KEY = "buku-setoran-state-v1";
 const SESSION_KEY = "buku-setoran-session-v1";
+const REMEMBER_KEY = "buku-setoran-remember-v1";
 const SYNC_CFG_KEY = "buku-setoran-cloud-cfg-v1";
 const CHANNEL_NAME = "buku-setoran-channel-v1";
 const NILAI = ["Lancar", "Cukup Lancar", "Perlu Diulang"];
@@ -653,6 +773,75 @@ const fmt = d => new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeri
 const sorted = a => [...a].sort((x,y)=>y.tgl.localeCompare(x.tgl)||String(y.createdAt||0).localeCompare(String(x.createdAt||0)));
 const ayatOf = l => l.filter(s=>s.jenis==="Ziyadah").reduce((a,s)=>a+(+s.ayat||0),0);
 const nCls = n => n==="Lancar"?"Lancar":n==="Cukup Lancar"?"Cukup":"Ulang";
+
+function getSurahInfo(surahNum){
+  const idx = Number(surahNum) - 1;
+  if(idx < 0 || idx >= SURAH.length) return null;
+  return { no: idx + 1, name: SURAH[idx][0], totalAyat: SURAH[idx][1] };
+}
+
+function getCompletedSurahByDate(list){
+  const bySurah = new Map();
+  for(const s of list){
+    const info = getSurahInfo(s.surah);
+    if(!info) continue;
+    const awal = Number(s.awal) || 1;
+    const akhir = Number(s.akhir) || 1;
+    const isFull = awal <= 1 && akhir >= info.totalAyat;
+    if(!isFull) continue;
+
+    const prev = bySurah.get(info.no);
+    if(!prev || String(s.tgl || "").localeCompare(prev.tgl) > 0){
+      bySurah.set(info.no, {
+        no: info.no,
+        name: info.name,
+        totalAyat: info.totalAyat,
+        tgl: s.tgl || today()
+      });
+    }
+  }
+
+  const grouped = new Map();
+  for(const item of bySurah.values()){
+    if(!grouped.has(item.tgl)) grouped.set(item.tgl, []);
+    grouped.get(item.tgl).push(item);
+  }
+
+  return [...grouped.entries()]
+    .sort((a,b)=>b[0].localeCompare(a[0]))
+    .map(([tgl, surahs])=>({
+      tgl,
+      surahs: surahs.sort((a,b)=>a.no - b.no)
+    }));
+}
+
+function renderCompletedSurahSection(list, titleText="Ringkasan Surah Terselesaikan (Lengkap)"){
+  const groups = getCompletedSurahByDate(list);
+  const totalSurah = groups.reduce((acc,g)=>acc + g.surahs.length, 0);
+  return `
+    <section class="card">
+      <div class="sec-head">
+        <div>
+          <h2>${esc(titleText)}</h2>
+          <p class="sec-sub">${totalSurah} surah lengkap terselesaikan · dikelompokkan berdasarkan tanggal yang sama</p>
+        </div>
+        <span class="tag">✓ ${totalSurah} Surah</span>
+      </div>
+      ${groups.length ? `
+        <div class="done-surah-list">
+          ${groups.map(g=>`
+            <div class="done-group">
+              <div class="done-date">${fmt(g.tgl)}</div>
+              <div class="done-items">
+                ${g.surahs.map(sr=>`<span class="done-pill">✓ ${sr.no}. ${esc(sr.name)} (${sr.totalAyat} ayat)</span>`).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      ` : '<div class="empty">Belum ada surah yang terselesaikan secara lengkap (ayat 1 sampai ayat terakhir).</div>'}
+    </section>
+  `;
+}
 
 function today(){
   const d = new Date();
@@ -867,8 +1056,39 @@ function logout(clearStorageSession=true){
   if(clearStorageSession) sessionStorage.removeItem(SESSION_KEY);
   $("mainApp").classList.add("hidden");
   $("loginScreen").classList.remove("hidden");
-  $("loginForm").reset();
   $("loginErr").classList.add("hidden");
+  applyRememberedLogin();
+}
+
+function applyRememberedLogin(){
+  try{
+    const raw = localStorage.getItem(REMEMBER_KEY);
+    if(!raw){
+      $("loginForm").reset();
+      return;
+    }
+    const data = JSON.parse(raw);
+    if(data && data.user && data.pass){
+      $("loginUser").value = data.user;
+      $("loginPass").value = data.pass;
+      $("rememberMe").checked = true;
+    }else{
+      $("loginForm").reset();
+    }
+  }catch(e){
+    $("loginForm").reset();
+  }
+}
+
+function setEyeState(visible){
+  const input = $("loginPass");
+  const btn = $("togglePassBtn");
+  const icon = $("eyeIcon");
+  input.type = visible ? "text" : "password";
+  btn.setAttribute("aria-pressed", visible ? "true" : "false");
+  icon.innerHTML = visible
+    ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a21.74 21.74 0 0 1-3.17 4.42M1 1l22 22"/><path d="M14.12 14.12a3 3 0 0 1-4.24-4.24"/>'
+    : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>';
 }
 
 function cleanExpiredQuotes(){
@@ -913,7 +1133,7 @@ function dash(){
   $("view").innerHTML = `
     <div class="top-bar">
       <div>
-        <h1>Assalamu’alaikum🕌</h1>
+        <h1>Assalamu’alaikum</h1>
         <p class="lead">Masuk sebagai <strong>${esc(pName(activeRole))}</strong>. Pantau progress hafalan kedua peserta dan saling berbagi quotes.</p>
       </div>
       <div class="top-actions">
@@ -1024,6 +1244,8 @@ function dash(){
           `).join("") : '<div class="empty">Belum ada catatan setoran.</div>'}
         </div>
       </section>
+
+      ${renderCompletedSurahSection(S.setoran, "Ringkasan Surah Terselesaikan (Lengkap)")}
     </div>
   `;
 
@@ -1287,6 +1509,10 @@ function hist(){
         <tbody id="histBody">${tableBody(filteredSetoran(), true)}</tbody>
       </table>
     </div>
+
+    <div style="margin-top:16px">
+      ${renderCompletedSurahSection(filteredSetoran(), "Ringkasan Surah Terselesaikan pada Riwayat")}
+    </div>
   `;
 
   const refreshRows = () => {
@@ -1400,6 +1626,10 @@ function detailPeserta(){
         <tbody>${tableBody(list, false)}</tbody>
       </table>
     </div>
+
+    <div style="margin-top:16px">
+      ${renderCompletedSurahSection(list, `Surah Terselesaikan – ${p.nama}`)}
+    </div>
   `;
 
   $("backPeserta").onclick = () => { selP = null; render(); };
@@ -1487,17 +1717,23 @@ function exportJPG(list, title){
   const img = new Image();
   img.onload = () => {
     const canvas = document.createElement("canvas");
-    canvas.width = W; canvas.height = H;
+    canvas.width = W;
+    canvas.height = H;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
-    const a = document.createElement("a");
-    a.download = `${title.toLowerCase().replace(/[^a-z0-9]+/gi,"-")}.jpg`;
-    a.href = canvas.toDataURL("image/jpeg", 0.92);
-    a.click();
-    toast("Rekap JPG diunduh.");
+    const link = document.createElement("a");
+    link.download = `${title.toLowerCase().replace(/[^a-z0-9]+/gi,"-")}.jpg`;
+    link.href = canvas.toDataURL("image/jpeg", 0.92);
+    link.click();
+    toast("Rekap JPG berhasil diunduh.");
   };
   img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
+
+$("togglePassBtn").onclick = () => {
+  const currentlyVisible = $("loginPass").type === "text";
+  setEyeState(!currentlyVisible);
+};
 
 $("loginForm").onsubmit = ev => {
   ev.preventDefault();
@@ -1509,7 +1745,15 @@ $("loginForm").onsubmit = ev => {
     $("loginErr").classList.remove("hidden");
     return;
   }
+  try{
+    if($("rememberMe").checked){
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ user: $("loginUser").value.trim(), pass: p }));
+    }else{
+      localStorage.removeItem(REMEMBER_KEY);
+    }
+  }catch(e){}
   $("loginErr").classList.add("hidden");
+  setEyeState(false);
   activeRole = acc.role;
   tab = "dash";
   editId = null;
@@ -1547,6 +1791,7 @@ $("syncSave").onclick = async () => {
 loadLocal();
 setupBroadcast();
 connectCloud();
+applyRememberedLogin();
 
 const savedRole = sessionStorage.getItem(SESSION_KEY);
 if(savedRole === "p1" || savedRole === "p2"){

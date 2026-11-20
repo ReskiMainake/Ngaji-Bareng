@@ -92,6 +92,21 @@ main{padding-bottom:96px;padding-top:24px}
 body{background:#fff;color:#000}.app{display:none}#print{display:block;font-family:Figtree,sans-serif}
 #print h1{color:#0a4f3a}#print table{min-width:0}#print th,#print td{font-size:12px;border-bottom:1px solid #bbb}
 }
+
+.gif-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gif-slot{border:1px dashed var(--sage-d);border-radius:14px;padding:14px;background:var(--bg);min-width:0}
+.gif-preview{height:180px;border-radius:10px;background:var(--sage);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:10px;color:var(--mute);text-align:center;padding:10px}
+.gif-preview img{width:100%;height:100%;object-fit:contain}
+.gif-slot input{font-size:13px;padding:8px}
+.quote-form{display:grid;gap:10px;margin-bottom:18px}
+.quote-list{display:grid;gap:12px}
+.quote-card{border:1px solid var(--line);border-radius:13px;padding:14px;background:var(--surface)}
+.quote-text{font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 12px}
+.quote-meta{font-size:13px;color:var(--mute)}
+.like-btn{border:1px solid var(--line);border-radius:99px;background:var(--bg);padding:6px 12px;cursor:pointer;font-weight:600}
+.like-btn.liked{border-color:#d68a9b;background:#fff0f3;color:#b4234b}
+@media(max-width:560px){.gif-grid{grid-template-columns:1fr}.gif-preview{height:160px}}
+
 </style>
 </head>
 <body>
@@ -108,25 +123,28 @@ body{background:#fff;color:#000}.app{display:none}#print{display:block;font-fami
 <dialog id="dlg"><p id="dlgMsg" style="margin:0"></p><div class="dlg-act"><button class="btn ghost sm" id="dlgNo">Batal</button><button class="btn sm" id="dlgYes">Hapus</button></div></dialog>
 
 <script>
-const KEY="setoran-hafalan-v1";
+const KEY="setoran-hafalan-v2";
 const NILAI=["Lancar","Cukup Lancar","Perlu Diulang"];
+const SURAH=[["Al-Fatihah",7],["Al-Baqarah",286],["Ali ’Imran",200],["An-Nisa",176],["Al-Ma’idah",120],["Al-An’am",165],["Al-A’raf",206],["Al-Anfal",75],["At-Taubah",129],["Yunus",109],["Hud",123],["Yusuf",111],["Ar-Ra’d",43],["Ibrahim",52],["Al-Hijr",99],["An-Nahl",128],["Al-Isra",111],["Al-Kahf",110],["Maryam",98],["Taha",135],["Al-Anbiya",112],["Al-Hajj",78],["Al-Mu’minun",118],["An-Nur",64],["Al-Furqan",77],["Asy-Syu’ara",227],["An-Naml",93],["Al-Qasas",88],["Al-’Ankabut",69],["Ar-Rum",60],["Luqman",34],["As-Sajdah",30],["Al-Ahzab",73],["Saba",54],["Fatir",45],["Yasin",83],["As-Saffat",182],["Sad",88],["Az-Zumar",75],["Ghafir",85],["Fussilat",54],["Asy-Syura",53],["Az-Zukhruf",89],["Ad-Dukhan",59],["Al-Jasiyah",37],["Al-Ahqaf",35],["Muhammad",38],["Al-Fath",29],["Al-Hujurat",18],["Qaf",45],["Az-Zariyat",60],["At-Tur",49],["An-Najm",62],["Al-Qamar",55],["Ar-Rahman",78],["Al-Waqi’ah",96],["Al-Hadid",29],["Al-Mujadilah",22],["Al-Hasyr",24],["Al-Mumtahanah",13],["As-Saff",14],["Al-Jumu’ah",11],["Al-Munafiqun",11],["At-Tagabun",18],["At-Talaq",12],["At-Tahrim",12],["Al-Mulk",30],["Al-Qalam",52],["Al-Haqqah",52],["Al-Ma’arij",44],["Nuh",28],["Al-Jinn",28],["Al-Muzzammil",20],["Al-Muddassir",56],["Al-Qiyamah",40],["Al-Insan",31],["Al-Mursalat",50],["An-Naba",40],["An-Nazi’at",46],["Abasa",42],["At-Takwir",29],["Al-Infitar",19],["Al-Mutaffifin",36],["Al-Insyiqaq",25],["Al-Buruj",22],["At-Tariq",17],["Al-A’la",19],["Al-Ghasyiyah",26],["Al-Fajr",30],["Al-Balad",20],["Asy-Syams",15],["Al-Lail",21],["Ad-Duha",11],["Asy-Syarh",8],["At-Tin",8],["Al-Alaq",19],["Al-Qadr",5],["Al-Bayyinah",8],["Az-Zalzalah",8],["Al-Adiyat",11],["Al-Qari’ah",11],["At-Takasur",8],["Al-Asr",3],["Al-Humazah",9],["Al-Fil",5],["Quraisy",4],["Al-Ma’un",7],["Al-Kausar",3],["Al-Kafirun",6],["An-Nasr",3],["Al-Lahab",5],["Al-Ikhlas",4],["Al-Falaq",5],["An-Nas",6]];
 const nCls=n=>n==="Lancar"?"Lancar":n==="Cukup Lancar"?"Cukup":"Ulang";
 const ICON={dash:'<path d="M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',add:'<path d="M12 5v14M5 12h14"/>',hist:'<path d="M4 6h16M4 12h16M4 18h10"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'};
 const TABS=[["dash","Ringkasan"],["add","Setor"],["hist","Riwayat"],["user","Peserta"]];
-let S={peserta:[],setoran:[]},tab="dash",editId=null,selP=null,flt={q:"",nilai:"",jenis:""};
+let S={peserta:[],setoran:[],quotes:[]},tab="dash",editId=null,selP=null,flt={q:"",nilai:"",jenis:""};
 
 function today(){const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
 function seed(){
-  S.peserta=[{id:"p1",nama:"Ahmad Fauzi",target:600},{id:"p2",nama:"Siti Aisyah",target:400},{id:"p3",nama:"Muhammad Rizky",target:300}];
-  S.setoran=[
-   {id:"s1",pid:"p1",jenis:"Ziyadah",materi:"Surah Al-Mulk ayat 1–15",ayat:15,tgl:daysAgo(1),nilai:"Lancar",catatan:"Mad thabi’i di ayat 3 perlu lebih panjang."},
-   {id:"s2",pid:"p2",jenis:"Muroja'ah",materi:"Juz 30 (An-Naba–An-Nazi’at)",ayat:0,tgl:daysAgo(2),nilai:"Cukup Lancar",catatan:"Ragu pada akhir ayat di Surah An-Naba."},
-   {id:"s3",pid:"p3",jenis:"Ziyadah",materi:"Surah Al-Qalam ayat 1–20",ayat:20,tgl:daysAgo(3),nilai:"Perlu Diulang",catatan:"Ulangi ayat 10–20, perhatikan ikhfa’."},
-   {id:"s4",pid:"p1",jenis:"Ziyadah",materi:"Surah Al-Mulk ayat 16–30",ayat:15,tgl:daysAgo(9),nilai:"Lancar",catatan:""}];
+  S.peserta=[{id:"p1",nama:"Reski",target:600},{id:"p2",nama:"Ima Sholeha",target:600}];
+  S.setoran=[];
+  S.quotes=[];
 }
-function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);return}}catch(e){}seed();save()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);if(!Array.isArray(S.peserta)||!Array.isArray(S.setoran))throw 0;S.peserta=[{id:"p1",nama:"Reski",target:S.peserta.find(p=>p.nama==="Reski")?.target||600},{id:"p2",nama:"Ima Sholeha",target:S.peserta.find(p=>p.nama==="Ima Sholeha")?.target||600}];S.setoran=S.setoran.filter(x=>["p1","p2"].includes(x.pid));S.quotes=Array.isArray(S.quotes)?S.quotes.filter(q=>["p1","p2"].includes(q.pid)&&Number.isFinite(Number(q.createdAt))&&(Date.now()-Number(q.createdAt)<24*60*60*1000)).map(q=>({...q,likes:Array.isArray(q.likes)?q.likes:[]})):[];save();return}}catch(e){}seed();save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("Penyimpanan penuh. Hapus data lama atau kurangi isi.")}}
+function cleanExpiredQuotes(){
+  const before=(S.quotes||[]).length;
+  S.quotes=(S.quotes||[]).filter(q=>Number.isFinite(Number(q.createdAt))&&(Date.now()-Number(q.createdAt)<24*60*60*1000));
+  if(S.quotes.length!==before){save();if(tab==="dash"&&$("quoteList"))render()}
+}
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const uid=()=>Math.random().toString(36).slice(2,9);
 const pName=id=>(S.peserta.find(p=>p.id===id)||{nama:"(dihapus)"}).nama;
@@ -135,6 +153,12 @@ const sorted=a=>[...a].sort((x,y)=>y.tgl.localeCompare(x.tgl)||y.id.localeCompar
 const ayatOf=l=>l.filter(s=>s.jenis==="Ziyadah").reduce((a,s)=>a+(+s.ayat||0),0);
 function weekStart(){const d=new Date(),k=(d.getDay()+6)%7;return daysAgo(k)}
 function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;t.setAttribute("role","status");document.body.append(t);setTimeout(()=>t.remove(),2200)}
+const GIF_DB="buku-setoran-gif",GIF_STORE="animasi";
+function gifDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(GIF_DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(GIF_STORE))req.result.createObjectStore(GIF_STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function saveGif(slot,file){const db=await gifDB();await new Promise((resolve,reject)=>{const tx=db.transaction(GIF_STORE,"readwrite");tx.objectStore(GIF_STORE).put(file,slot);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}
+async function readGif(slot){const db=await gifDB();const blob=await new Promise((resolve,reject)=>{const tx=db.transaction(GIF_STORE,"readonly"),req=tx.objectStore(GIF_STORE).get(slot);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});db.close();return blob}
+async function showGif(slot){const box=$("gifPreview"+slot);if(!box)return;try{const blob=await readGif(slot);if(blob&&$("gifPreview"+slot)){const url=URL.createObjectURL(blob);box.innerHTML=`<img src="${url}" alt="Animasi GIF ${slot}">`;}}catch(e){box.textContent="Belum ada GIF. Pilih file untuk menambahkan animasi."}}
+
 function ask(msg,yes="Hapus"){return new Promise(r=>{dlgMsg.textContent=msg;dlgYes.textContent=yes;const d=$("dlg");d.showModal();const done=v=>{d.close();r(v)};dlgYes.onclick=()=>done(true);dlgNo.onclick=()=>done(false)})}
 const $=id=>document.getElementById(id);
 
@@ -147,12 +171,31 @@ function render(){renderNav();({dash,add:formView,hist,user:pesertaView})[tab]()
 
 function chip(n){return `<span class="chip ${nCls(n)}">${esc(n)}</span>`}
 function dash(){
+  cleanExpiredQuotes();
   const tot=S.setoran.length,ay=ayatOf(S.setoran),tg=S.peserta.reduce((a,p)=>a+(+p.target||0),0);
   const pct=tg?Math.min(100,Math.round(ay/tg*100)):0;
   const ws=weekStart(),wk=S.setoran.filter(s=>s.tgl>=ws).length;
   const rec=sorted(S.setoran).slice(0,6);
+  const quotes=[...S.quotes].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   $("view").innerHTML=`
-  <h1>Assalamu’alaikum</h1><p class="lead">Ringkasan setoran hafalan seluruh peserta.</p>
+  <h1>Assalamu’alaikum</h1><p class="lead">Ringkasan hafalan setoran peserta.</p>
+  <section class="card" style="margin-bottom:14px">
+   <h2>Animasi GIF</h2>
+   <p class="quote-meta" style="margin-top:-6px;margin-bottom:12px">Sisipkan satu gambar GIF pilihan Anda. Animasi tersimpan di perangkat ini.</p>
+   <div class="gif-grid" style="grid-template-columns:minmax(0,1fr)">
+    <div class="gif-slot"><strong>Animasi</strong><div class="gif-preview" id="gifPreview1">Belum ada GIF. Pilih file untuk menambahkan animasi.</div><input type="file" id="gifFile1" accept="image/gif" aria-label="Pilih GIF"></div>
+   </div>
+  </section>
+  <section class="card" style="margin-bottom:14px">
+   <h2>Quotes Peserta</h2>
+   <p class="quote-meta" style="margin-top:-6px">Reski dan Ima Sholeha dapat saling berbagi kata-kata penyemangat dan memberikan like.</p>
+   <form class="quote-form" id="quoteForm">
+    <div><label for="quoteBy">Kirim sebagai</label><select id="quoteBy"><option value="p1">Reski</option><option value="p2">Ima Sholeha</option></select></div>
+    <div><label for="quoteText">Tulis quotes</label><textarea id="quoteText" maxlength="500" placeholder="Tuliskan pesan atau motivasi..." required></textarea></div>
+    <div><button class="btn" type="submit">Kirim quotes</button></div>
+   </form>
+   <div class="quote-list" id="quoteList">${quotes.length?quotes.map(q=>`<article class="quote-card"><div class="head"><strong>${esc(pName(q.pid))}</strong><span class="quote-meta">${q.createdAt?new Date(q.createdAt).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):""}</span></div><p class="quote-text">${esc(q.text)}</p><button class="like-btn ${q.likes.includes("p1")||q.likes.includes("p2")?"liked":""}" data-like="${esc(q.id)}">♡ Suka · ${q.likes.length}</button> <button class="btn danger sm" data-quote-delete="${esc(q.id)}">Hapus</button></article>`).join(""):'<div class="empty">Belum ada quotes. Jadilah yang pertama berbagi semangat!</div>'}</div>
+  </section>
   <div class="grid stats">
    <div class="card stat main"><b>${ay}</b><span>ayat baru (Ziyadah) disetorkan</span><div class="bar"><i style="width:${pct}%"></i></div></div>
    <div class="card stat"><b>${pct}%</b><span>capaian dari target ${tg} ayat</span></div>
@@ -162,30 +205,93 @@ function dash(){
   <div class="card"><div class="head"><h2>Setoran terbaru</h2><button class="btn sm" id="n">Catat setoran</button></div>
   <div class="list">${rec.length?rec.map(s=>`<div class="row"><div><strong>${esc(pName(s.pid))}</strong> <span class="tag">${esc(s.jenis)}</span><small>${esc(s.materi)} · ${fmt(s.tgl)}</small></div>${chip(s.nilai)}</div>`).join(""):'<div class="empty">Belum ada setoran. Catat setoran pertama.</div>'}</div></div>`;
   $("n").onclick=()=>{editId=null;go("add")};
+  showGif(1);
+  $("gifFile1").onchange=async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    if(file.type!=="image/gif"){toast("Silakan pilih file gambar GIF.");e.target.value="";return}
+    try{await saveGif("1",file);await showGif(1);toast("Animasi GIF berhasil disimpan.")}catch(err){console.error(err);toast("GIF gagal disimpan. Coba file yang lebih kecil.")}
+  };
+  $("quoteForm").onsubmit=e=>{
+    e.preventDefault();
+    const textValue=$("quoteText").value.trim(),pid=$("quoteBy").value;
+    if(!textValue){toast("Quotes tidak boleh kosong.");return}
+    S.quotes.push({id:uid(),pid,text:textValue,likes:[],createdAt:Date.now()});
+    save();dash();toast("Quotes berhasil dikirim.");
+  };
+  $("quoteList").querySelectorAll("[data-like]").forEach(b=>b.onclick=()=>{
+    const q=S.quotes.find(x=>x.id===b.dataset.like);if(!q)return;
+    const actor=$("quoteBy").value;q.likes=Array.isArray(q.likes)?q.likes:[];
+    q.likes=q.likes.includes(actor)?q.likes.filter(x=>x!==actor):[...q.likes,actor];
+    save();dash();
+  });
+  $("quoteList").querySelectorAll("[data-quote-delete]").forEach(b=>b.onclick=async()=>{
+    const q=S.quotes.find(x=>x.id===b.dataset.quoteDelete);if(!q)return;
+    if(await ask("Hapus quotes ini?")){S.quotes=S.quotes.filter(x=>x.id!==q.id);save();dash();toast("Quotes dihapus.")}
+  });
 }
-
 function formView(){
-  const e=S.setoran.find(s=>s.id===editId)||{pid:S.peserta[0]?.id||"",jenis:"Ziyadah",materi:"",ayat:"",tgl:today(),nilai:"Lancar",catatan:""};
-  if(!S.peserta.length){$("view").innerHTML=`<h1>Setoran baru</h1><div class="card empty">Tambahkan peserta terlebih dahulu.<br><br><button class="btn" id="gp">Ke halaman Peserta</button></div>`;$("gp").onclick=()=>go("user");return}
-  $("view").innerHTML=`<h1>${editId?"Ubah setoran":"Setoran baru"}</h1><p class="lead">Catat hafalan yang baru disetorkan beserta penilaian dan koreksinya.</p>
+  const e=S.setoran.find(s=>s.id===editId)||{pid:S.peserta[0]?.id||"p1",jenis:"Ziyadah",surah:1,awal:1,akhir:1,materi:"",ayat:1,tgl:today(),nilai:"Lancar",catatan:""};
+  const sid=Number(e.surah)||1, info=SURAH[sid-1], awal=Number(e.awal)||1, akhir=Number(e.akhir)||awal;
+  if(!S.peserta.length){seed()}
+  $("view").innerHTML=`<h1>${editId?"Ubah setoran":"Setoran baru"}</h1><p class="lead">Catat hafalan yang baru disetorkan.</p>
   <form class="card grid form" id="f" autocomplete="off">
    <div><label for="pid">Nama santri</label><select id="pid" required>${S.peserta.map(p=>`<option value="${p.id}" ${p.id===e.pid?"selected":""}>${esc(p.nama)}</option>`).join("")}</select></div>
    <div><label for="tgl">Tanggal setoran</label><input type="date" id="tgl" required value="${e.tgl}"></div>
    <div class="full"><label>Jenis hafalan</label><div class="seg">
     <label><input type="radio" name="j" value="Ziyadah" ${e.jenis==="Ziyadah"?"checked":""}><span>Ziyadah (hafalan baru)</span></label>
     <label><input type="radio" name="j" value="Muroja'ah" ${e.jenis!=="Ziyadah"?"checked":""}><span>Muroja’ah (mengulang)</span></label></div></div>
-   <div><label for="materi">Materi / surah / ayat</label><input id="materi" required placeholder="Contoh: Surah Al-Mulk ayat 1–15" value="${esc(e.materi)}"></div>
-   <div><label for="ayat">Jumlah ayat baru <small style="font-weight:400;color:var(--mute)">(untuk Ziyadah)</small></label><input type="number" min="0" id="ayat" value="${esc(e.ayat)}" placeholder="15"></div>
+   <div class="full"><label for="surah">Surah (114 surah)</label><select id="surah" required>${SURAH.map((x,i)=>`<option value="${i+1}" ${sid===i+1?"selected":""}>${i+1}. ${esc(x[0])} (${x[1]} ayat)</option>`).join("")}</select></div>
+   <div><label for="awal">Ayat awal</label><select id="awal" required></select></div>
+   <div><label for="akhir">Ayat akhir</label><select id="akhir" required></select></div>
+   <div class="full"><label>Jumlah ayat terpilih</label><input id="jumlah" readonly value="${Math.max(1,akhir-awal+1)}"></div>
    <div class="full"><label>Penilaian</label><div class="seg">${NILAI.map(n=>`<label><input type="radio" name="n" value="${n}" ${e.nilai===n?"checked":""}><span>${n}</span></label>`).join("")}</div></div>
-   <div class="full"><label for="cat">Catatan / koreksi</label><textarea id="cat" placeholder="Tajwid, makhraj, makna, atau poin perbaikan">${esc(e.catatan)}</textarea></div>
+   <div class="full"><label for="cat">Catatan / komentar</label><textarea id="cat"></textarea></div>
    <div class="full" style="display:flex;gap:10px"><button class="btn" type="submit">${editId?"Simpan perubahan":"Simpan setoran"}</button>${editId?'<button class="btn ghost" type="button" id="cx">Batal</button>':""}</div>
   </form>`;
+  const updateAyatFields=(reset=false)=>{
+    const n=SURAH[+$("surah").value-1][1];
+    const oldA=reset?1:(+$("awal").value||awal), oldB=reset?1:(+$("akhir").value||akhir);
+    $("awal").innerHTML=Array.from({length:n},(_,i)=>`<option value="${i+1}" ${i+1===Math.min(oldA,n)?"selected":""}>${i+1}</option>`).join("");
+    const a=+$("awal").value;
+    $("akhir").innerHTML=Array.from({length:n-a+1},(_,i)=>`<option value="${a+i}" ${a+i===Math.max(a,Math.min(oldB,n))?"selected":""}>${a+i}</option>`).join("");
+    const b=+$("akhir").value;
+    $("jumlah").value=(b>=a)?(b-a+1):"";
+  };
+  $("surah").onchange=()=>{updateAyatFields(true)};
+  $("awal").onchange=()=>{updateAyatFields()};
+  $("akhir").onchange=()=>{updateAyatFields()};
+  updateAyatFields();
   if(editId)$("cx").onclick=()=>{editId=null;go("hist")};
-  $("f").onsubmit=ev=>{ev.preventDefault();
-    const jenis=document.querySelector('input[name=j]:checked').value;
-    const o={pid:$("pid").value,jenis,materi:$("materi").value.trim(),ayat:jenis==="Ziyadah"?(+$("ayat").value||0):0,tgl:$("tgl").value,nilai:document.querySelector('input[name=n]:checked').value,catatan:$("cat").value.trim()};
-    if(editId){Object.assign(S.setoran.find(s=>s.id===editId),o);toast("Setoran diperbarui")}else{S.setoran.push({id:uid(),...o});toast("Setoran disimpan")}
-    save();editId=null;go(editId===null&&tab?"hist":"dash")};
+  $("f").onsubmit=ev=>{
+    ev.preventDefault();
+    try{
+      const jenis=document.querySelector('input[name="j"]:checked')?.value || "Ziyadah";
+      const nilai=document.querySelector('input[name="n"]:checked')?.value || "Lancar";
+      const surah=Number($("surah").value), a=Number($("awal").value), b=Number($("akhir").value);
+      const batas=SURAH[surah-1]?.[1];
+      if(!batas){toast("Silakan pilih surah terlebih dahulu.");return;}
+      if(!Number.isInteger(a)||!Number.isInteger(b)||a<1||b<a||b>batas){
+        toast(`Isi ayat 1 sampai ${batas}, dan ayat akhir tidak boleh lebih kecil dari ayat awal.`);return;
+      }
+      const pid=$("pid").value, tgl=$("tgl").value;
+      if(!pid||!tgl){toast("Nama santri dan tanggal setoran wajib diisi.");return;}
+      const o={pid,jenis,surah,awal:a,akhir:b,materi:`Surah ${SURAH[surah-1][0]} ayat ${a}${b!==a?"–"+b:""}`,ayat:jenis==="Ziyadah"?(b-a+1):0,tgl,nilai,catatan:$("cat").value.trim()};
+      if(editId){
+        const existing=S.setoran.find(s=>s.id===editId);
+        if(!existing) throw new Error("Data setoran yang akan diubah tidak ditemukan.");
+        Object.assign(existing,o);
+      }else{
+        S.setoran.push({id:uid(),...o});
+      }
+      save();
+      editId=null;
+      go("hist");
+      toast("Setoran berhasil disimpan.");
+    }catch(err){
+      console.error("Gagal menyimpan setoran:",err);
+      toast("Setoran belum tersimpan. Periksa penyimpanan browser lalu coba lagi.");
+    }
+  };
 }
 
 function filtered(){const q=flt.q.toLowerCase();return sorted(S.setoran).filter(s=>(!flt.nilai||s.nilai===flt.nilai)&&(!flt.jenis||s.jenis===flt.jenis)&&(!q||(pName(s.pid)+" "+s.materi).toLowerCase().includes(q)))}
@@ -193,14 +299,14 @@ function rowsHtml(l,acts=true){return l.length?l.map(s=>`<tr><td>${fmt(s.tgl)}</
 const THEAD=a=>`<thead><tr><th>Tanggal</th><th>Santri</th><th>Jenis</th><th>Materi</th><th>Nilai</th><th>Catatan</th>${a?"<th></th>":""}</tr></thead>`;
 function hist(){
   $("view").innerHTML=`<div class="head"><div><h1>Riwayat setoran</h1><p class="lead" style="margin-bottom:12px">Cari, saring, ubah, atau hapus catatan.</p></div>
-   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="xc">Ekspor CSV</button><button class="btn ghost sm" id="xj">Ekspor JSON</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button></div></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="jpg">Cetak rekap (JPG)</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button></div></div>
    <div class="bar-tools"><input class="grow" id="q" type="search" placeholder="Cari nama atau materi" aria-label="Cari" value="${esc(flt.q)}">
    <select id="fn" aria-label="Penilaian"><option value="">Semua penilaian</option>${NILAI.map(n=>`<option ${flt.nilai===n?"selected":""}>${n}</option>`).join("")}</select>
    <select id="fj" aria-label="Jenis"><option value="">Semua jenis</option><option ${flt.jenis==="Ziyadah"?"selected":""}>Ziyadah</option><option ${flt.jenis==="Muroja'ah"?"selected":""}>Muroja'ah</option></select></div>
    <div class="card tbl" style="padding:6px 10px"><table>${THEAD(true)}<tbody id="tb">${rowsHtml(filtered())}</tbody></table></div>`;
   const body=()=>{$("tb").innerHTML=rowsHtml(filtered());bind()};
   $("q").oninput=e=>{flt.q=e.target.value;body()};$("fn").onchange=e=>{flt.nilai=e.target.value;body()};$("fj").onchange=e=>{flt.jenis=e.target.value;body()};
-  $("xc").onclick=exportCSV;$("xj").onclick=exportJSON;$("pr").onclick=()=>printRecap(filtered(),"Rekap Setoran Hafalan");
+  $("jpg").onclick=()=>exportJPG(filtered(),"Rekap Setoran Hafalan");$("pr").onclick=()=>printRecap(filtered(),"Rekap Setoran Hafalan");
   const bind=()=>{
    $("tb").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{editId=b.dataset.e;go("add")});
    $("tb").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{if(await ask("Hapus setoran ini? Tindakan ini tidak bisa dibatalkan.")){S.setoran=S.setoran.filter(s=>s.id!==b.dataset.d);save();body();toast("Setoran dihapus")}})};
@@ -208,38 +314,39 @@ function hist(){
 }
 
 function pesertaView(){
-  if(selP&&S.peserta.find(p=>p.id===selP))return detail();
-  $("view").innerHTML=`<h1>Peserta</h1><p class="lead">Lihat progres setiap peserta, atau tambahkan peserta baru.</p>
-  <div class="grid pgrid">${S.peserta.map(p=>{const l=S.setoran.filter(s=>s.pid===p.id),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;return `<button class="card pcard" data-p="${p.id}"><h3>${esc(p.nama)}</h3><small style="color:var(--mute)">${l.length} setoran · ${a} dari ${p.target} ayat</small><div class="bar"><i style="width:${pc}%"></i></div><small style="color:var(--em-d);font-weight:600">${pc}% dari target</small></button>`}).join("")}</div>
-  <form class="card grid form" id="pf" style="margin-top:18px;grid-template-columns:2fr 1fr auto;align-items:end"><div><label for="pn">Nama peserta baru</label><input id="pn" required></div><div><label for="pt">Target (ayat)</label><input id="pt" type="number" min="1" value="300" required></div><button class="btn" type="submit">Tambah</button></form>
-  <p style="margin-top:20px"><button class="btn danger sm" id="rs">Kembalikan data contoh</button></p>`;
+  $("view").innerHTML=`<h1>Peserta</h1><p class="lead">Daftar peserta tetap.</p>
+  <div class="grid pgrid">${S.peserta.map(p=>{const l=S.setoran.filter(s=>s.pid===p.id),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;return `<button class="card pcard" data-p="${p.id}"><h3>${esc(p.nama)}</h3><small style="color:var(--mute)">${l.length} setoran · ${a} dari ${p.target} ayat</small><div class="bar"><i style="width:${pc}%"></i></div><small style="color:var(--em-d);font-weight:600">${pc}% dari target</small></button>`}).join("")}</div>`;
   document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{selP=b.dataset.p;render();scrollTo(0,0)});
-  $("pf").onsubmit=e=>{e.preventDefault();S.peserta.push({id:uid(),nama:$("pn").value.trim(),target:+$("pt").value||300});save();toast("Peserta ditambahkan");render()};
-  $("rs").onclick=async()=>{if(await ask("Semua data diganti dengan data contoh. Lanjutkan?","Ganti")){seed();save();render()}};
 }
 function detail(){
   const p=S.peserta.find(x=>x.id===selP),l=sorted(S.setoran.filter(s=>s.pid===p.id)),a=ayatOf(l),pc=p.target?Math.min(100,Math.round(a/p.target*100)):0;
   const c=n=>l.filter(s=>s.nilai===n).length;
   $("view").innerHTML=`<button class="back" id="bk">← Semua peserta</button><div class="head"><div><h1>${esc(p.nama)}</h1><p class="lead" style="margin-bottom:12px">${a} dari ${p.target} ayat tercapai (${pc}%)</p></div>
-   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="et">Ubah target</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button><button class="btn danger sm" id="dp">Hapus peserta</button></div></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="et">Ubah target</button><button class="btn ghost sm" id="jpg">Cetak rekap (JPG)</button><button class="btn sm" id="pr">Cetak rekap (PDF)</button></div></div>
    <div class="card" style="margin-bottom:14px"><div class="bar"><i style="width:${pc}%"></i></div>
    <p style="margin:12px 0 0;display:flex;gap:8px;flex-wrap:wrap"><span class="chip Lancar">Lancar ${c("Lancar")}</span><span class="chip Cukup">Cukup Lancar ${c("Cukup Lancar")}</span><span class="chip Ulang">Perlu Diulang ${c("Perlu Diulang")}</span><span class="tag">Total ${l.length} setoran</span></p></div>
    <div class="card tbl" style="padding:6px 10px"><table>${THEAD(false)}<tbody>${rowsHtml(l,false).replace(/colspan="7"/,'colspan="6"')}</tbody></table></div>`;
   $("bk").onclick=()=>{selP=null;render()};
-  $("pr").onclick=()=>printRecap(l,"Rekap Hafalan – "+p.nama);
+  $("jpg").onclick=()=>exportJPG(l,"Rekap Hafalan – "+p.nama);$("pr").onclick=()=>printRecap(l,"Rekap Hafalan – "+p.nama);
   $("et").onclick=()=>{const v=prompt?null:null;const n=+(window.prompt?window.prompt("Target jumlah ayat:",p.target):0);if(n>0){p.target=n;save();render()}};
   $("dp").onclick=async()=>{if(await ask(`Hapus ${p.nama} beserta seluruh setorannya?`)){S.peserta=S.peserta.filter(x=>x.id!==p.id);S.setoran=S.setoran.filter(s=>s.pid!==p.id);save();selP=null;render()}};
 }
 
-async function saveFile(name,text,type){
-  try{const d=await claude.use("downloads");if(d){await d.save({filename:name,data:new Blob([text],{type})});return}}catch(e){if(e&&e.code==="declined")return}
-  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}catch(e){}
-}
-function exportJSON(){saveFile("setoran-hafalan.json",JSON.stringify(S,null,2),"application/json")}
-function exportCSV(){
-  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-  const rows=[["Tanggal","Santri","Jenis","Materi","Jumlah ayat","Penilaian","Catatan"],...sorted(S.setoran).map(s=>[s.tgl,pName(s.pid),s.jenis,s.materi,s.ayat,s.nilai,s.catatan])];
-  saveFile("setoran-hafalan.csv","\ufeff"+rows.map(r=>r.map(q).join(",")).join("\n"),"text/csv");
+function xmlEsc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;")}
+function exportJPG(l,title){
+  const W=1400, pad=48, cols=[150,180,150,390,190,244], headers=["Tanggal","Santri","Jenis","Materi","Penilaian","Catatan"];
+  const wrap=(value,max)=>{const words=String(value??"–").split(/\s+/),out=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(test.length>max&&line){out.push(line);line=word}else line=test}if(line)out.push(line);return out.length?out:["–"]};
+  const rows=l.length?sorted(l).map(s=>[fmt(s.tgl),pName(s.pid),s.jenis,s.materi,s.nilai,s.catatan||"–"]):[];
+  let y=190;const rowData=rows.map(r=>{const lines=r.map((v,i)=>wrap(v,[18,22,18,52,22,30][i]));const h=Math.max(58,...lines.map(a=>a.length*25+24));const o={lines,y,h};y+=h;return o});
+  const H=y+pad+25;let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="100%" height="100%" fill="#ffffff"/><rect x="0" y="0" width="${W}" height="16" fill="#0a684d"/><text x="${pad}" y="82" font-family="Arial,sans-serif" font-size="38" font-weight="700" fill="#123b2e">${xmlEsc(title)}</text><text x="${pad}" y="126" font-family="Arial,sans-serif" font-size="21" fill="#52645d">Dicetak ${xmlEsc(fmt(today()))}  •  ${rows.length} setoran  •  ${ayatOf(l)} ayat baru</text>`;
+  let x=pad;svg+=`<rect x="${pad}" y="155" width="${W-pad*2}" height="48" rx="8" fill="#e8f2ee"/>`;
+  headers.forEach((h,i)=>{svg+=`<text x="${x+12}" y="186" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#174c3b">${xmlEsc(h)}</text>`;x+=cols[i]});
+  rowData.forEach((r,ri)=>{svg+=`<rect x="${pad}" y="${r.y}" width="${W-pad*2}" height="${r.h}" fill="${ri%2===0?"#ffffff":"#f7faf8"}"/><path d="M ${pad} ${r.y+r.h} H ${W-pad}" stroke="#dce6e1" stroke-width="2"/>`;let cx=pad;r.lines.forEach((lines,i)=>{lines.forEach((line,j)=>{svg+=`<text x="${cx+12}" y="${r.y+30+j*25}" font-family="Arial,sans-serif" font-size="17" fill="#263b33">${xmlEsc(line)}</text>`});cx+=cols[i]})});
+  if(!rows.length)svg+=`<text x="${pad+12}" y="244" font-family="Arial,sans-serif" font-size="20" fill="#66756e">Belum ada data setoran.</text>`;
+  svg+="</svg>";
+  const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"}),url=URL.createObjectURL(blob),img=new Image();
+  img.onload=()=>{try{const c=document.createElement("canvas");c.width=W*2;c.height=H*2;const ctx=c.getContext("2d");ctx.scale(2,2);ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);ctx.drawImage(img,0,0,W,H);c.toBlob(b=>{if(b){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(title.replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"")||"rekap-hafalan")+".jpg";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}URL.revokeObjectURL(url)},"image/jpeg",0.95)}catch(e){toast("Gagal membuat gambar JPG");URL.revokeObjectURL(url)}};
+  img.onerror=()=>{toast("Gagal membuat gambar JPG");URL.revokeObjectURL(url)};img.src=url;
 }
 function recapHtml(l,title){
   const a=ayatOf(l);
@@ -247,12 +354,11 @@ function recapHtml(l,title){
 }
 async function printRecap(l,title){
   $("print").innerHTML=recapHtml(l,title);
-  try{window.print()}catch(e){}
-  const html=`<!doctype html><meta charset="utf-8"><title>${esc(title)}</title><style>body{font-family:sans-serif;padding:24px}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #bbb;padding:6px;text-align:left;font-size:13px;vertical-align:top}h1{color:#0a4f3a}</style>`+$("print").innerHTML.replace(/<span class="chip[^>]*>|<span class="tag">|<\/span>/g,"").replace(/<small[^>]*>/g," <small>");
-  if(await ask("Jika dialog cetak tidak muncul, simpan rekap sebagai file HTML lalu cetak dari browser. Simpan file?","Simpan")){saveFile("rekap-hafalan.html",html,"text/html")}
+  try{window.print()}catch(e){toast("Tidak dapat membuka dialog cetak")}
 }
 
 load();render();
+setInterval(cleanExpiredQuotes,60*1000);
 </script>
 </body>
 </html>

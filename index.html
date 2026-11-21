@@ -1127,30 +1127,15 @@ function chip(n){
   return `<span class="chip ${nCls(n)}">${esc(n)}</span>`;
 }
 
-function loadLocal(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) S = normalizeState(JSON.parse(raw));
-  }catch(e){}
-  saveLocal();
-}
-function saveLocal(){
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
-  }catch(e){
-    toast("Penyimpanan lokal penuh.");
-  }
-}
+// Data hafalan tidak lagi disimpan di browser, hanya di Firebase.
+function saveLocal(){}
 
 async function persistState(){
-  S.updatedAt = Date.now();
-  saveLocal();
-  if(bc){
-    try{ bc.postMessage({ type:"state", state:S }); }catch(e){}
+  if(!dbRef){
+    toast("Tidak terhubung ke server. Data belum tersimpan.");
+    return;
   }
-  if(!applyingRemote){
-    await pushFirebaseState();
-  }
+  if(!applyingRemote) await pushFirebaseState();
 }
 
 function applyIncomingState(raw){
@@ -1192,16 +1177,18 @@ function buildUpdates(){
 }
 
 async function pushFirebaseState(){
-  if(!dbRef) return;
+  if(!dbRef) return false;
   const ups = buildUpdates();
-  if(!Object.keys(ups).length) return;
+  if(!Object.keys(ups).length) return true;
   const snap = snapshotMaps();
   try{
     await update(dbRef, ups);
     lastSynced = snap;
+    return true;
   }catch(err){
     console.error("Firebase write error:", err);
     toast("Gagal menyimpan ke server. Periksa Rules Firebase.");
+    return false;
   }
 }
 
@@ -1250,9 +1237,23 @@ async function initFirebaseSync(){
       applyRemote(snap.val());
     }else{
       const old = await get(ref(db, `rooms/${cfg.room}/state`));
-      if(old.exists()){ S = normalizeState(old.val()); saveLocal(); }
-      await pushFirebaseState();
+      if(old.exists()) S = normalizeState(old.val());
     }
+
+    // Migrasi sekali jalan: pindahkan data lama di browser ke Firebase, lalu hapus dari browser.
+    try{
+      const legacyRaw = localStorage.getItem(STORAGE_KEY);
+      if(legacyRaw){
+        const legacy = normalizeState(JSON.parse(legacyRaw));
+        for(const c of ["setoran","quotes","materi"]){
+          const ids = new Set(S[c].map(x => x.id));
+          legacy[c].forEach(x => { if(!ids.has(x.id)) S[c].push(x); });
+        }
+        if(await pushFirebaseState()) localStorage.removeItem(STORAGE_KEY);
+      }else if(!snap.exists()){
+        await pushFirebaseState();
+      }
+    }catch(e){ console.error("Migrasi data lokal gagal:", e); }
 
     unsubDb = onValue(dbRef, s => {
       if(s.exists()) applyRemote(s.val());
@@ -1267,16 +1268,7 @@ async function initFirebaseSync(){
 }
 
 function setupBroadcast(){
-  if("BroadcastChannel" in window){
-    bc = new BroadcastChannel(CHANNEL_NAME);
-    bc.onmessage = ev => {
-      if(ev.data?.type === "state") applyIncomingState(ev.data.state);
-    };
-  }
   window.addEventListener("storage", ev => {
-    if(ev.key === STORAGE_KEY && ev.newValue){
-      try{ applyIncomingState(JSON.parse(ev.newValue)); }catch(e){}
-    }
     if(ev.key === SESSION_KEY && !ev.newValue && activeRole){
       activeRole = null;
       showLogin();
@@ -2338,7 +2330,6 @@ function render(){
 }
 
 async function boot(){
-  loadLocal();
   setupBroadcast();
   setupAuthEvents();
   await initFirebaseSync();

@@ -238,15 +238,15 @@ nav button{
   background:none;
   border:0;
   color:inherit;
-  padding:10.5px 12px;
+  padding:10px 12px;
   border-radius:11px;
   cursor:pointer;
   text-align:left;
   font-weight:500;
-  font-size:14.5px;
+  font-size:14px;
   transition:background-color .16s ease, transform .16s ease;
 }
-nav button svg{width:19px;height:19px;flex:none}
+nav button svg{width:18px;height:18px;flex:none}
 nav button:hover{background:rgba(255,255,255,.1)}
 nav button[aria-current=page]{
   background:var(--bg);
@@ -293,6 +293,28 @@ h1{
   gap:8px;
   flex-wrap:wrap;
   align-items:center;
+  margin-left:auto;
+}
+.top-logout-btn{
+  border:1px solid var(--bad-bg);
+  background:var(--bad-bg);
+  color:var(--bad);
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:600;
+  font-size:13.5px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:filter .16s ease, transform .14s ease, background-color .16s ease;
+  white-space:nowrap;
+}
+.top-logout-btn:hover{
+  filter:brightness(.97);
+}
+.top-logout-btn:active{
+  transform:translateY(1px);
 }
 h2{
   font-size:17px;
@@ -434,6 +456,48 @@ h2{
   color:#b4234b;
 }
 
+/* Materi Belajar di Beranda */
+.materi-list{
+  display:grid;
+  gap:12px;
+  margin-top:14px;
+}
+.materi-card{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:15px 17px;
+  background:var(--bg);
+}
+.materi-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.materi-title{
+  margin:4px 0 0;
+  font-size:16px;
+  font-weight:700;
+}
+.materi-body{
+  margin:8px 0 10px;
+  font-size:14.5px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.materi-link{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--em-d);
+  text-decoration:none;
+  word-break:break-all;
+}
+.materi-link:hover{text-decoration:underline}
+
 .list{display:flex;flex-direction:column}
 .row{
   display:flex;
@@ -526,9 +590,9 @@ h2{
   border-color:var(--sage-d);
 }
 .btn.light{
-  background:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.14);
   color:#fff;
-  border-color:rgba(255,255,255,.22);
+  border-color:rgba(255,255,255,.28);
 }
 .btn.sm{padding:6px 12px;font-size:13px;border-radius:9px}
 .btn.danger{
@@ -614,7 +678,7 @@ td.act{white-space:nowrap;text-align:right}
   border-radius:999px;
   font-weight:600;
   font-size:13.5px;
-  z-index:50;
+  z-index:80;
   box-shadow:var(--shadow-lg);
 }
 dialog{
@@ -646,20 +710,34 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     left:0;right:0;bottom:0;top:auto;
     height:auto;
     flex-direction:row;
-    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));
-    z-index:30;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));
+    z-index:40;
     box-shadow:0 -4px 20px rgba(0,0,0,.14);
   }
-  .brand,.brand-sub,.user-pill,.sync-badge,.side-foot{display:none}
-  nav{flex-direction:row;width:100%;justify-content:space-around}
+  .brand,.brand-sub,.user-pill,.sync-badge{display:none}
+  .side-foot{
+    margin-top:0;
+    display:flex;
+    align-items:center;
+    padding:0 2px;
+    flex:none;
+  }
+  .side-foot .btn.sm{
+    padding:7px 9px;
+    font-size:11.5px;
+    border-radius:9px;
+    white-space:nowrap;
+  }
+  nav{flex-direction:row;width:100%;justify-content:space-around;gap:2px}
   nav button{
     flex-direction:column;
     gap:2px;
-    font-size:11.5px;
-    padding:6px 4px;
+    font-size:11px;
+    padding:6px 2px;
     flex:1;
     align-items:center;
   }
+  nav button svg{width:17px;height:17px}
   main{padding:20px 14px 92px}
   .card{padding:17px 16px;border-radius:16px}
   .toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
@@ -716,14 +794,12 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
       <small id="sideRoleLabel">Akun aktif</small>
       <strong id="sideUserName">–</strong>
     </div>
-    <div class="sync-badge" id="syncBadge" title="Status sinkronisasi Firebase">
+    <div class="sync-badge hidden" id="syncBadge" title="Status sinkronisasi Firebase">
       <span class="sync-dot" id="syncDot"></span>
       <span id="syncText">Menyiapkan Firebase…</span>
     </div>
     <nav id="nav"></nav>
-    <div class="side-foot">
-      <button class="btn light sm" type="button" id="sideLogoutBtn">Keluar</button>
-    </div>
+    <div class="side-foot"></div>
   </aside>
   <main id="view"></main>
 </div>
@@ -733,7 +809,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <dialog id="dlg">
   <p id="dlgMsg" style="margin:0"></p>
   <div class="dlg-act">
-    <button class="btn ghost sm" type="button" id="dlgNo">Batal</button>
+    <button class="btn ghost sm" type="button" id="dlgNo">Tidak</button>
     <button class="btn sm" type="button" id="dlgYes">Ya</button>
   </div>
 </dialog>
@@ -754,16 +830,24 @@ const FIREBASE_CFG_KEY = "buku-setoran-firebase-cfg-v1";
 const CHANNEL_NAME = "buku-setoran-channel-v1";
 const DEFAULT_ROOM = "buku-setoran-reski-ima-v1";
 const NILAI = ["Lancar", "Cukup Lancar", "Perlu Diulang"];
+const MATERI_KAT = ["Tajwid", "Bahasa Arab", "Tafsir & Adab", "Ushul / Fikih", "Lainnya"];
 const SURAH = [["Al-Fatihah",7],["Al-Baqarah",286],["Ali ’Imran",200],["An-Nisa",176],["Al-Ma’idah",120],["Al-An’am",165],["Al-A’raf",206],["Al-Anfal",75],["At-Taubah",129],["Yunus",109],["Hud",123],["Yusuf",111],["Ar-Ra’d",43],["Ibrahim",52],["Al-Hijr",99],["An-Nahl",128],["Al-Isra",111],["Al-Kahf",110],["Maryam",98],["Taha",135],["Al-Anbiya",112],["Al-Hajj",78],["Al-Mu’minun",118],["An-Nur",64],["Al-Furqan",77],["Asy-Syu’ara",227],["An-Naml",93],["Al-Qasas",88],["Al-’Ankabut",69],["Ar-Rum",60],["Luqman",34],["As-Sajdah",30],["Al-Ahzab",73],["Saba",54],["Fatir",45],["Yasin",83],["As-Saffat",182],["Sad",88],["Az-Zumar",75],["Ghafir",85],["Fussilat",54],["Asy-Syura",53],["Az-Zukhruf",89],["Ad-Dukhan",59],["Al-Jasiyah",37],["Al-Ahqaf",35],["Muhammad",38],["Al-Fath",29],["Al-Hujurat",18],["Qaf",45],["Az-Zariyat",60],["At-Tur",49],["An-Najm",62],["Al-Qamar",55],["Ar-Rahman",78],["Al-Waqi’ah",96],["Al-Hadid",29],["Al-Mujadilah",22],["Al-Hasyr",24],["Al-Mumtahanah",13],["As-Saff",14],["Al-Jumu’ah",11],["Al-Munafiqun",11],["At-Tagabun",18],["At-Talaq",12],["At-Tahrim",12],["Al-Mulk",30],["Al-Qalam",52],["Al-Haqqah",52],["Al-Ma’arij",44],["Nuh",28],["Al-Jinn",28],["Al-Muzzammil",20],["Al-Muddassir",56],["Al-Qiyamah",40],["Al-Insan",31],["Al-Mursalat",50],["An-Naba",40],["An-Nazi’at",46],["Abasa",42],["At-Takwir",29],["Al-Infitar",19],["Al-Mutaffifin",36],["Al-Insyiqaq",25],["Al-Buruj",22],["At-Tariq",17],["Al-A’la",19],["Al-Ghasyiyah",26],["Al-Fajr",30],["Al-Balad",20],["Asy-Syams",15],["Al-Lail",21],["Ad-Duha",11],["Asy-Syarh",8],["At-Tin",8],["Al-Alaq",19],["Al-Qadr",5],["Al-Bayyinah",8],["Az-Zalzalah",8],["Al-Adiyat",11],["Al-Qari’ah",11],["At-Takasur",8],["Al-Asr",3],["Al-Humazah",9],["Al-Fil",5],["Quraisy",4],["Al-Ma’un",7],["Al-Kausar",3],["Al-Kafirun",6],["An-Nasr",3],["Al-Lahab",5],["Al-Ikhlas",4],["Al-Falaq",5],["An-Nas",6]];
+
 const ICON = {
-  dash:'<path d="M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',
+  home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>',
+  dash:'<path d="M4 13h6v7H4zM14 4h6v16h-6zM4 4h6v6H4z"/>',
   add:'<path d="M12 5v14M5 12h14"/>',
   hist:'<path d="M4 6h16M4 12h16M4 18h10"/>',
   user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'
 };
-const TABS = [["dash","Ringkasan"],["add","Setor"],["hist","Riwayat"],["user","Peserta"]];
+const TABS = [
+  ["home","Beranda"],
+  ["dash","Ringkasan"],
+  ["add","Setor"],
+  ["hist","Riwayat"],
+  ["user","Peserta"]
+];
 
-// Konfigurasi Firebase tertanam langsung di kode
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBBFFT2V9SOR8dAh7mheePBk1ggwQhIUYY",
   authDomain: "ngaji-bareng-2a823.firebaseapp.com",
@@ -776,16 +860,16 @@ const FIREBASE_CONFIG = {
 };
 
 let activeRole = null;
-let tab = "dash";
+let tab = "home";
 let editId = null;
 let selP = null;
 let flt = { q:"", nilai:"", jenis:"" };
+let materiFilter = { q:"", kat:"" };
 let S = defaultState();
 let bc = null;
 let dbRef = null;
 let unsubDb = null;
 let applyingRemote = false;
-let syncStatus = { state: "warn", text: "Mode Lokal (Belum terhubung)" };
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -793,14 +877,23 @@ const uid = () => Math.random().toString(36).slice(2,9);
 const pName = id => (S.peserta.find(p=>p.id===id)||{nama:"–"}).nama;
 const partnerIdOf = role => role === "p1" ? "p2" : "p1";
 const fmt = d => new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
+const fmtTime = ts => {
+  if(!ts) return "";
+  return new Date(Number(ts)).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+};
 const sorted = a => [...a].sort((x,y)=>y.tgl.localeCompare(x.tgl)||String(y.createdAt||0).localeCompare(String(x.createdAt||0)));
 const ayatOf = l => l.filter(s=>s.jenis==="Ziyadah").reduce((a,s)=>a+(+s.ayat||0),0);
 const nCls = n => n==="Lancar"?"Lancar":n==="Cukup Lancar"?"Cukup":"Ulang";
 
-function setSyncBadge(state, text){
-  syncStatus = { state, text };
-  const badge = $("syncBadge");
-  if(badge) badge.classList.add("hidden");
+function safeUrl(raw){
+  const u = String(raw || "").trim();
+  if(!u) return "";
+  const candidate = /^https?:\/\//i.test(u) ? u : "https://" + u;
+  try{
+    const parsed = new URL(candidate);
+    if(parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+  }catch(e){}
+  return "";
 }
 
 function getFirebaseConfig(){
@@ -824,19 +917,6 @@ function getFirebaseConfig(){
     databaseURL: (FIREBASE_CONFIG.databaseURL || "").trim().replace(/\/+$/, ""),
     room: DEFAULT_ROOM
   };
-}
-
-function saveFirebaseConfig(cfg){
-  localStorage.setItem(FIREBASE_CFG_KEY, JSON.stringify({
-    apiKey: cfg.apiKey || "",
-    authDomain: cfg.authDomain || "",
-    databaseURL: cfg.databaseURL || "",
-    projectId: cfg.projectId || "",
-    storageBucket: cfg.storageBucket || "",
-    messagingSenderId: cfg.messagingSenderId || "",
-    appId: cfg.appId || "",
-    room: cfg.room || DEFAULT_ROOM
-  }));
 }
 
 function getSurahInfo(surahNum){
@@ -930,6 +1010,7 @@ function defaultState(){
     ],
     setoran:[],
     quotes:[],
+    materi:[],
     updatedAt:Date.now()
   };
 }
@@ -940,6 +1021,9 @@ function normalizeState(raw){
     }
     if(Array.isArray(raw.quotes) && !raw.quotes.length && raw.quotesMap && typeof raw.quotesMap === "object"){
       raw.quotes = Object.values(raw.quotesMap);
+    }
+    if(Array.isArray(raw.materi) && !raw.materi.length && raw.materiMap && typeof raw.materiMap === "object"){
+      raw.materi = Object.values(raw.materiMap);
     }
   }
   const p1T = raw?.peserta?.find(p=>p.id==="p1")?.target || 600;
@@ -953,6 +1037,20 @@ function normalizeState(raw){
           text: String(q.text || ""),
           likes: Array.isArray(q.likes) ? q.likes.filter(x=>["p1","p2"].includes(x)) : [],
           createdAt: Number(q.createdAt)
+        }))
+    : [];
+  const materi = Array.isArray(raw?.materi)
+    ? raw.materi
+        .filter(m=>["p1","p2"].includes(m.pid) && String(m.judul || m.isi || "").trim())
+        .map(m=>({
+          id: String(m.id || uid()),
+          pid: m.pid,
+          judul: String(m.judul || "Catatan Materi").trim(),
+          kategori: MATERI_KAT.includes(m.kategori) ? m.kategori : "Lainnya",
+          isi: String(m.isi || "").trim(),
+          tautan: String(m.tautan || "").trim(),
+          likes: Array.isArray(m.likes) ? m.likes.filter(x=>["p1","p2"].includes(x)) : [],
+          createdAt: Number(m.createdAt) || Date.now()
         }))
     : [];
   const setoran = Array.isArray(raw?.setoran)
@@ -981,6 +1079,7 @@ function normalizeState(raw){
     ],
     setoran,
     quotes,
+    materi,
     updatedAt: Number(raw?.updatedAt) || Date.now()
   };
 }
@@ -993,10 +1092,11 @@ function toast(msg){
   document.body.append(el);
   setTimeout(()=>el.remove(), 2200);
 }
-function ask(msg, yesLabel="Hapus"){
+function ask(msg, yesLabel="Hapus", noLabel="Tidak"){
   return new Promise(resolve=>{
     $("dlgMsg").textContent = msg;
     $("dlgYes").textContent = yesLabel;
+    $("dlgNo").textContent = noLabel;
     const d = $("dlg");
     d.showModal();
     const finish = val => { d.close(); resolve(val); };
@@ -1028,6 +1128,7 @@ function toFirebasePayload(stateObj){
     peserta: stateObj.peserta,
     setoran: stateObj.setoran,
     quotes: stateObj.quotes,
+    materi: stateObj.materi,
     updatedAt: Number(stateObj.updatedAt) || Date.now()
   };
 }
@@ -1058,17 +1159,11 @@ function applyIncomingState(raw){
 }
 
 async function pushFirebaseState(stateObj){
-  if(!dbRef){
-    setSyncBadge("warn", "Mode Lokal (Belum terhubung Firebase)");
-    return;
-  }
+  if(!dbRef) return;
   try{
-    setSyncBadge("warn", "Menyimpan ke Firebase…");
     await set(dbRef, toFirebasePayload(stateObj));
-    setSyncBadge("ok", "Terhubung Firebase Realtime");
   }catch(err){
     console.error("Firebase write error:", err);
-    setSyncBadge("err", "Gagal simpan ke Firebase (cek Rules)");
   }
 }
 
@@ -1080,10 +1175,7 @@ async function initFirebaseSync(){
   dbRef = null;
 
   const cfg = getFirebaseConfig();
-  if(!cfg.databaseURL){
-    setSyncBadge("warn", "Mode Lokal (Isi Database URL Firebase)");
-    return;
-  }
+  if(!cfg.databaseURL) return;
 
   try{
     const appName = "buku-setoran-firebase-app";
@@ -1099,12 +1191,11 @@ async function initFirebaseSync(){
 
     const db = getDatabase(fbApp);
     dbRef = ref(db, `rooms/${cfg.room}/state`);
-    setSyncBadge("warn", "Menghubungkan ke Firebase…");
 
     const snap = await get(dbRef);
     if(snap.exists()){
       applyIncomingState(snap.val());
-    }else if((S.setoran && S.setoran.length) || (S.quotes && S.quotes.length)){
+    }else if((S.setoran && S.setoran.length) || (S.quotes && S.quotes.length) || (S.materi && S.materi.length)){
       await set(dbRef, toFirebasePayload(S));
     }
 
@@ -1112,14 +1203,11 @@ async function initFirebaseSync(){
       if(snapshot.exists()){
         applyIncomingState(snapshot.val());
       }
-      setSyncBadge("ok", "Terhubung Firebase Realtime");
     }, err => {
       console.error("Firebase listener error:", err);
-      setSyncBadge("err", "Akses Firebase ditolak / offline");
     });
   }catch(err){
     console.error("Firebase init error:", err);
-    setSyncBadge("err", "Konfigurasi Firebase tidak valid");
   }
 }
 
@@ -1135,408 +1223,689 @@ function setupBroadcast(){
       try{ applyIncomingState(JSON.parse(ev.newValue)); }catch(e){}
     }
     if(ev.key === SESSION_KEY && !ev.newValue && activeRole){
-      logout(false);
-    }
-    if(ev.key === FIREBASE_CFG_KEY){
-      initFirebaseSync();
+      activeRole = null;
+      showLogin();
     }
   });
 }
 
-function showApp(){
-  $("loginScreen").classList.add("hidden");
-  $("mainApp").classList.remove("hidden");
-  $("sideRoleLabel").textContent = "Peserta aktif";
-  $("sideUserName").textContent = pName(activeRole);
-  setSyncBadge(syncStatus.state, syncStatus.text);
-  render();
-}
-
-function logout(clearStorageSession=true){
-  activeRole = null;
-  editId = null;
-  selP = null;
-  if(clearStorageSession) sessionStorage.removeItem(SESSION_KEY);
+function showLogin(){
   $("mainApp").classList.add("hidden");
   $("loginScreen").classList.remove("hidden");
   $("loginErr").classList.add("hidden");
-  applyRememberedLogin();
-}
-
-function applyRememberedLogin(){
   try{
-    const raw = localStorage.getItem(REMEMBER_KEY);
-    if(!raw){
-      $("loginForm").reset();
-      return;
-    }
-    const data = JSON.parse(raw);
-    if(data && data.user && data.pass){
-      $("loginUser").value = data.user;
-      $("loginPass").value = data.pass;
+    const rem = JSON.parse(localStorage.getItem(REMEMBER_KEY) || "null");
+    if(rem && rem.user && rem.pass){
+      $("loginUser").value = rem.user;
+      $("loginPass").value = rem.pass;
       $("rememberMe").checked = true;
     }else{
-      $("loginForm").reset();
+      $("loginUser").value = "";
+      $("loginPass").value = "";
+      $("rememberMe").checked = false;
     }
-  }catch(e){
-    $("loginForm").reset();
-  }
+  }catch(e){}
+  $("loginPass").type = "password";
+  $("togglePassBtn").setAttribute("aria-pressed","false");
 }
 
-function setEyeState(visible){
-  const input = $("loginPass");
-  const btn = $("togglePassBtn");
-  const icon = $("eyeIcon");
-  input.type = visible ? "text" : "password";
-  btn.setAttribute("aria-pressed", visible ? "true" : "false");
-  icon.innerHTML = visible
-    ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a21.74 21.74 0 0 1-3.17 4.42M1 1l22 22"/><path d="M14.12 14.12a3 3 0 0 1-4.24-4.24"/>'
-    : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>';
+async function logout(){
+  const ok = await ask("Yakin mau keluar dari akun?", "Ya");
+  if(!ok) return;
+  activeRole = null;
+  editId = null;
+  selP = null;
+  tab = "home";
+  try{
+    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
+  }catch(e){}
+  showLogin();
+  toast("Berhasil keluar dari akun.");
 }
 
-function cleanExpiredQuotes(){
-  const before = S.quotes.length;
-  S.quotes = S.quotes.filter(q=>Number.isFinite(Number(q.createdAt)) && (Date.now() - Number(q.createdAt) < 24*60*60*1000));
-  if(S.quotes.length !== before) persistState();
+function enterApp(role){
+  activeRole = role;
+  tab = "home";
+  editId = null;
+  selP = null;
+  try{ localStorage.setItem(SESSION_KEY, role); }catch(e){}
+  $("loginScreen").classList.add("hidden");
+  $("mainApp").classList.remove("hidden");
+  const info = S.peserta.find(p=>p.id===role);
+  $("sideRoleLabel").textContent = "Akun aktif";
+  $("sideUserName").textContent = info ? info.nama : role;
+  render();
+}
+
+function setupAuthEvents(){
+  $("togglePassBtn").addEventListener("click", () => {
+    const inp = $("loginPass");
+    const isPass = inp.type === "password";
+    inp.type = isPass ? "text" : "password";
+    $("togglePassBtn").setAttribute("aria-pressed", String(isPass));
+  });
+
+  $("loginForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const u = $("loginUser").value.trim().toLowerCase();
+    const p = $("loginPass").value;
+    const acc = CREDENTIALS[u];
+    if(!acc || acc.pass !== p){
+      $("loginErr").textContent = "Username atau sandi salah. Silakan periksa kembali.";
+      $("loginErr").classList.remove("hidden");
+      return;
+    }
+    $("loginErr").classList.add("hidden");
+    try{
+      if($("rememberMe").checked){
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ user: u, pass: p }));
+      }else{
+        localStorage.removeItem(REMEMBER_KEY);
+      }
+    }catch(err){}
+    enterApp(acc.role);
+  });
+
+  if($("sideLogoutBtn")) $("sideLogoutBtn").addEventListener("click", logout);
 }
 
 function renderNav(){
-  $("nav").innerHTML = TABS.map(([k,l])=>`
-    <button type="button" data-t="${k}" ${tab===k?'aria-current="page"':''}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>
-      <span>${l}</span>
+  $("nav").innerHTML = TABS.map(([id, label]) => `
+    <button type="button" data-tab="${id}" ${tab===id ? 'aria-current="page"' : ""}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg>
+      <span>${label}</span>
     </button>
   `).join("");
-  $("nav").querySelectorAll("button").forEach(btn=>{
-    btn.onclick = () => {
-      if(btn.dataset.t === "add") editId = null;
-      tab = btn.dataset.t;
+
+  $("nav").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      tab = btn.dataset.tab;
+      if(tab !== "add") editId = null;
       if(tab !== "user") selP = null;
       render();
-      window.scrollTo(0,0);
-    };
+    });
   });
 }
 
-function render(){
-  renderNav();
-  ({ dash, add:formView, hist, user:pesertaView })[tab]();
+function renderQuotesSection(){
+  const activeQuotes = (S.quotes || [])
+    .filter(q => Date.now() - Number(q.createdAt || 0) < 24*60*60*1000)
+    .sort((a,b) => Number(b.createdAt) - Number(a.createdAt));
+
+  return `
+    <section class="card">
+      <div class="sec-head">
+        <div>
+          <h2>Quotes Hari Ini</h2>
+          <p class="sec-sub">Pesan penyemangat antara Reski &amp; Ima · otomatis hilang setelah 24 jam</p>
+        </div>
+        <span class="tag">${activeQuotes.length} Quote Aktif</span>
+      </div>
+
+      <div class="quote-box">
+        ${activeQuotes.length ? activeQuotes.map(q => {
+          const likes = Array.isArray(q.likes) ? q.likes : [];
+          const likedByMe = likes.includes(activeRole);
+          return `
+            <article class="quote-item">
+              <div class="quote-head">
+                <strong>${esc(pName(q.pid))}</strong>
+                <span class="quote-time">${esc(fmtTime(q.createdAt))}</span>
+              </div>
+              <p class="quote-body">${esc(q.text)}</p>
+              <div class="quote-foot">
+                <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-q-like="${esc(q.id)}">
+                  ${likedByMe ? "♥" : "♡"} Suka (${likes.length})
+                </button>
+                ${q.pid === activeRole ? `<button type="button" class="btn danger sm" data-q-del="${esc(q.id)}">Hapus</button>` : ""}
+              </div>
+            </article>
+          `;
+        }).join("") : '<div class="empty">Belum ada quote aktif dalam 24 jam terakhir. Tulis penyemangat pertamamu di bawah!</div>'}
+      </div>
+
+      <form id="quoteForm">
+        <div class="field">
+          <label for="quoteText">Tulis Quote untuk ${esc(pName(partnerIdOf(activeRole)))}</label>
+          <textarea id="quoteText" maxlength="280" placeholder="Contoh: Tetap istiqamah ya, sedikit demi sedikit asal rutin pasti sampai tujuan ✨" required></textarea>
+        </div>
+        <button class="btn sm" type="submit">Kirim Quote</button>
+      </form>
+    </section>
+  `;
 }
 
-function dash(){
-  cleanExpiredQuotes();
-  const tot = S.setoran.length;
-  const ay = ayatOf(S.setoran);
-  const tg = S.peserta.reduce((acc,p)=>acc + (+p.target||0), 0);
-  const pct = tg ? Math.min(100, Math.round(ay/tg*100)) : 0;
-  const wk = S.setoran.filter(s=>s.tgl >= weekStart()).length;
-  const rec = sorted(S.setoran).slice(0,6);
-  const quotes = [...S.quotes].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+function renderMateriSection(){
+  const qLower = materiFilter.q.trim().toLowerCase();
+  const list = [...(S.materi || [])]
+    .filter(m => {
+      if(materiFilter.kat && m.kategori !== materiFilter.kat) return false;
+      if(qLower){
+        const hay = `${m.judul} ${m.isi} ${m.kategori} ${pName(m.pid)}`.toLowerCase();
+        if(!hay.includes(qLower)) return false;
+      }
+      return true;
+    })
+    .sort((a,b) => Number(b.createdAt) - Number(a.createdAt));
+
+  return `
+    <section class="card">
+      <div class="sec-head">
+        <div>
+          <h2>Sharing Materi Belajar Bersama</h2>
+          <p class="sec-sub">Simpan dan bagikan ringkasan materi, kaidah tajwid, kosakata, atau catatan belajar berdua</p>
+        </div>
+        <span class="tag">${(S.materi || []).length} Materi</span>
+      </div>
+
+      <form id="materiForm" class="form-grid" style="margin-bottom:20px">
+        <div class="field">
+          <label for="matJudul">Judul / Topik Materi</label>
+          <input id="matJudul" type="text" maxlength="120" required placeholder="Contoh: Hukum Idgham Bighunnah & Contohnya">
+        </div>
+        <div class="field">
+          <label for="matKat">Kategori</label>
+          <select id="matKat">
+            ${MATERI_KAT.map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field full">
+          <label for="matIsi">Isi / Ringkasan Materi</label>
+          <textarea id="matIsi" maxlength="2000" required placeholder="Tuliskan poin penting, rumus/kaidah, atau catatan yang ingin dibagikan..."></textarea>
+        </div>
+        <div class="field full">
+          <label for="matLink">Tautan Referensi (opsional)</label>
+          <input id="matLink" type="text" placeholder="https://... (opsional)">
+        </div>
+        <div class="full">
+          <button class="btn" type="submit">Bagikan Materi</button>
+        </div>
+      </form>
+
+      <div class="filters">
+        <input id="matSearch" type="search" value="${esc(materiFilter.q)}" placeholder="Cari judul, isi, atau pemateri…">
+        <select id="matFilterKat">
+          <option value="">Semua kategori</option>
+          ${MATERI_KAT.map(k => `<option value="${esc(k)}" ${materiFilter.kat===k?"selected":""}>${esc(k)}</option>`).join("")}
+        </select>
+        <button class="btn ghost sm" type="button" id="matResetBtn">Reset Filter</button>
+      </div>
+
+      <div class="materi-list">
+        ${list.length ? list.map(m => {
+          const likes = Array.isArray(m.likes) ? m.likes : [];
+          const likedByMe = likes.includes(activeRole);
+          const validUrl = safeUrl(m.tautan);
+          return `
+            <article class="materi-card">
+              <div class="materi-top">
+                <div>
+                  <span class="tag">${esc(m.kategori)}</span>
+                  <h3 class="materi-title">${esc(m.judul)}</h3>
+                </div>
+                <span class="quote-time">${esc(pName(m.pid))} · ${esc(fmtTime(m.createdAt))}</span>
+              </div>
+              <p class="materi-body">${esc(m.isi)}</p>
+              ${validUrl ? `<div style="margin-bottom:10px"><a class="materi-link" href="${esc(validUrl)}" target="_blank" rel="noopener noreferrer">↗ Buka tautan referensi</a></div>` : ""}
+              <div class="quote-foot">
+                <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-m-like="${esc(m.id)}">
+                  ${likedByMe ? "♥" : "♡"} Paham / Suka (${likes.length})
+                </button>
+                ${m.pid === activeRole ? `<button type="button" class="btn danger sm" data-m-del="${esc(m.id)}">Hapus</button>` : ""}
+              </div>
+            </article>
+          `;
+        }).join("") : '<div class="empty">Belum ada materi belajar yang cocok dengan filter atau belum dibagikan.</div>'}
+      </div>
+    </section>
+  `;
+}
+
+function bindHomeEvents(){
+  const qForm = $("quoteForm");
+  if(qForm){
+    qForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const text = $("quoteText").value.trim();
+      if(!text) return;
+      S.quotes = (S.quotes || []).filter(q => Date.now() - Number(q.createdAt || 0) < 24*60*60*1000);
+      S.quotes.push({
+        id: uid(),
+        pid: activeRole,
+        text,
+        likes: [],
+        createdAt: Date.now()
+      });
+      await persistState();
+      toast("Quote terkirim!");
+      render();
+    });
+  }
+
+  document.querySelectorAll("[data-q-like]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.qLike;
+      const q = (S.quotes || []).find(x => x.id === id);
+      if(!q) return;
+      q.likes = Array.isArray(q.likes) ? q.likes : [];
+      if(q.likes.includes(activeRole)){
+        q.likes = q.likes.filter(x => x !== activeRole);
+      }else{
+        q.likes.push(activeRole);
+      }
+      await persistState();
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-q-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const ok = await ask("Hapus quote ini?");
+      if(!ok) return;
+      S.quotes = (S.quotes || []).filter(x => x.id !== btn.dataset.qDel);
+      await persistState();
+      toast("Quote dihapus.");
+      render();
+    });
+  });
+
+  const mForm = $("materiForm");
+  if(mForm){
+    mForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const judul = $("matJudul").value.trim();
+      const kategori = $("matKat").value;
+      const isi = $("matIsi").value.trim();
+      const tautan = $("matLink").value.trim();
+      if(!judul || !isi) return;
+      S.materi = Array.isArray(S.materi) ? S.materi : [];
+      S.materi.push({
+        id: uid(),
+        pid: activeRole,
+        judul,
+        kategori,
+        isi,
+        tautan,
+        likes: [],
+        createdAt: Date.now()
+      });
+      await persistState();
+      toast("Materi belajar dibagikan!");
+      render();
+    });
+  }
+
+  const matSearch = $("matSearch");
+  if(matSearch){
+    matSearch.addEventListener("input", () => {
+      materiFilter.q = matSearch.value;
+      render();
+    });
+  }
+  const matKat = $("matFilterKat");
+  if(matKat){
+    matKat.addEventListener("change", () => {
+      materiFilter.kat = matKat.value;
+      render();
+    });
+  }
+  const matReset = $("matResetBtn");
+  if(matReset){
+    matReset.addEventListener("click", () => {
+      materiFilter = { q:"", kat:"" };
+      render();
+    });
+  }
+
+  document.querySelectorAll("[data-m-like]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.mLike;
+      const m = (S.materi || []).find(x => x.id === id);
+      if(!m) return;
+      m.likes = Array.isArray(m.likes) ? m.likes : [];
+      if(m.likes.includes(activeRole)){
+        m.likes = m.likes.filter(x => x !== activeRole);
+      }else{
+        m.likes.push(activeRole);
+      }
+      await persistState();
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-m-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const ok = await ask("Hapus materi belajar ini?");
+      if(!ok) return;
+      S.materi = (S.materi || []).filter(x => x.id !== btn.dataset.mDel);
+      await persistState();
+      toast("Materi dihapus.");
+      render();
+    });
+  });
+}
+
+function topBar(title, subtitle){
+  return `
+    <div class="top-bar">
+      <div>
+        <h1>${esc(title)}</h1>
+        <p class="lead">${subtitle}</p>
+      </div>
+      <div class="top-actions">
+        <button class="top-logout-btn" type="button" data-action="logout" aria-label="Keluar dari akun">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function bindTopBarLogout(){
+  document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+    btn.addEventListener("click", logout);
+  });
+}
+
+function renderHome(){
+  $("view").innerHTML = `
+    ${topBar("Beranda", "Ruang hangat Reski &amp; Ima untuk saling menyemangati lewat quotes dan berbagi materi belajar.")}
+    <div class="stack">
+      ${renderQuotesSection()}
+      ${renderMateriSection()}
+    </div>
+  `;
+
+  bindTopBarLogout();
+  bindHomeEvents();
+}
+
+function renderDash(){
+  const ws = weekStart();
+  const wk = S.setoran.filter(s => s.tgl >= ws);
+  const totAyat = ayatOf(S.setoran);
+  const wkAyat = ayatOf(wk);
 
   $("view").innerHTML = `
     <div class="top-bar">
       <div>
-        <h1>Assalamu’alaikum</h1>
-        <p class="lead">Masuk sebagai <strong>${esc(pName(activeRole))}</strong>. Pantau progress hafalan kedua peserta dan saling berbagi quotes.</p>
+        <h1>Ringkasan Hafalan</h1>
+        <p class="lead">Pantau capaian hafalan baru (Ziyadah) dan muroja’ah bersama.</p>
       </div>
       <div class="top-actions">
-        <button class="btn danger sm" type="button" id="topLogoutBtn">Keluar</button>
+        <button class="btn sm" type="button" id="dashAddBtn">+ Catat Setoran</button>
+        <button class="top-logout-btn" type="button" data-action="logout" aria-label="Keluar dari akun">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Keluar</span>
+        </button>
       </div>
     </div>
 
     <div class="stack">
       <div class="grid-4">
-        <div class="card stat main">
-          <b>${ay}</b>
-          <span>ayat Ziyadah terkumpul</span>
-          <div class="bar"><i style="width:${pct}%"></i></div>
-        </div>
-        <div class="card stat">
-          <b>${pct}%</b>
-          <span>capaian dari ${tg} ayat</span>
-        </div>
-        <div class="card stat">
-          <b>${wk}</b>
-          <span>setoran minggu ini</span>
-        </div>
-        <div class="card stat">
-          <b>${tot}</b>
-          <span>total catatan setoran</span>
-        </div>
+        <div class="card stat main"><b>${totAyat}</b><span>Total ayat Ziyadah</span></div>
+        <div class="card stat"><b>${wkAyat}</b><span>Ziyadah pekan ini</span></div>
+        <div class="card stat"><b>${S.setoran.length}</b><span>Total setoran tercatat</span></div>
+        <div class="card stat"><b>${wk.length}</b><span>Setoran pekan ini</span></div>
       </div>
 
       <section class="card">
         <div class="sec-head">
           <div>
-            <h2>Progress Peserta</h2>
-            <p class="sec-sub">Ringkasan hafalan Reski dan Ima Cantik Sholeha🌸</p>
+            <h2>Progres Target Peserta</h2>
+            <p class="sec-sub">Dihitung dari akumulasi ayat Ziyadah masing-masing peserta</p>
           </div>
-          <button class="btn sm" type="button" id="goSetorBtn">Catat & Nilai Setoran</button>
         </div>
         <div class="grid-2">
-          ${S.peserta.map(p=>{
-            const l = S.setoran.filter(s=>s.pid===p.id);
-            const a = ayatOf(l);
-            const pr = p.target ? Math.min(100, Math.round(a/p.target*100)) : 0;
+          ${S.peserta.map(p => {
+            const list = S.setoran.filter(s => s.pid === p.id);
+            const ay = ayatOf(list);
+            const pct = Math.min(100, Math.round((ay / Math.max(1, p.target)) * 100));
             return `
               <div class="prog-item">
                 <div class="prog-top">
                   <strong>${esc(p.nama)}</strong>
-                  <span>${a} / ${p.target} ayat (${pr}%)</span>
+                  <span>${pct}%</span>
                 </div>
-                <div class="prog-meta">${l.length} setoran · ${l.filter(x=>x.nilai==="Lancar").length} lancar</div>
-                <div class="bar"><i style="width:${pr}%"></i></div>
+                <div class="prog-meta">${ay} / ${p.target} ayat Ziyadah · ${list.length} setoran</div>
+                <div class="bar"><i style="width:${pct}%"></i></div>
               </div>
             `;
           }).join("")}
         </div>
       </section>
 
-      ${renderCompletedSurahSection(S.setoran, "Ringkasan Surah Terselesaikan (Lengkap)")}
+      ${renderCompletedSurahSection(S.setoran)}
 
       <section class="card">
         <div class="sec-head">
           <div>
-            <h2>Quotes Hari Ini</h2>
-            <p class="sec-sub">Quotes otomatis hilang setelah 24 jam · saling beri like</p>
+            <h2>Setoran Terbaru</h2>
+            <p class="sec-sub">5 catatan setoran terakhir</p>
           </div>
-        </div>
-
-        <div class="quote-box">
-          ${quotes.length ? quotes.map(q=>{
-            const likes = Array.isArray(q.likes) ? q.likes : [];
-            const likedByMe = likes.includes(activeRole);
-            const timeStr = new Date(q.createdAt).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
-            return `
-              <div class="quote-item">
-                <div class="quote-head">
-                  <strong>${esc(pName(q.pid))}</strong>
-                  <span class="quote-time">Hari ini · ${timeStr}</span>
-                </div>
-                <p class="quote-body">${esc(q.text)}</p>
-                <div class="quote-foot">
-                  <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-like="${q.id}">
-                    ${likedByMe ? "♥" : "♡"} Suka (${likes.length})
-                  </button>
-                  ${q.pid === activeRole ? `<button type="button" class="btn ghost sm" data-delq="${q.id}">Hapus</button>` : ""}
-                </div>
-              </div>
-            `;
-          }).join("") : '<div class="empty">Belum ada quotes aktif dalam 24 jam terakhir.</div>'}
-        </div>
-
-        <form id="quoteForm">
-          <div class="field">
-            <label for="quoteInput">Tulis quote untuk hari ini</label>
-            <textarea id="quoteInput" maxlength="280" placeholder="Tulis pesan semangat, nasihat, atau quote singkat..."></textarea>
-          </div>
-          <button class="btn sm" type="submit">Kirim Quote</button>
-        </form>
-      </section>
-
-      <section class="card">
-        <div class="sec-head">
-          <h2>Setoran Terbaru</h2>
-          <button class="btn ghost sm" type="button" id="allHistBtn">Lihat semua</button>
+          <button class="btn ghost sm" type="button" id="dashAllBtn">Lihat Semua</button>
         </div>
         <div class="list">
-          ${rec.length ? rec.map(s=>`
-            <div class="row">
-              <div>
-                <strong>${esc(pName(s.pid))}</strong> · <span class="tag">${esc(s.jenis)}</span> ${esc(s.materi)}
-                <small>${fmt(s.tgl)} · Dinilai oleh ${esc(pName(s.penilai))}${s.catatan?" · "+esc(s.catatan):""}</small>
+          ${sorted(S.setoran).slice(0,5).map(s => {
+            const info = getSurahInfo(s.surah);
+            const label = info ? `${info.no}. ${info.name} (${s.awal}–${s.akhir})` : (s.materi || "Setoran");
+            return `
+              <div class="row">
+                <div>
+                  <strong>${esc(pName(s.pid))}</strong> · <span class="tag">${esc(s.jenis)}</span> · ${esc(label)}
+                  <small>${fmt(s.tgl)} · Penilai: ${esc(pName(s.penilai))}${s.ayat ? ` · ${s.ayat} ayat` : ""}${s.catatan ? ` · "${esc(s.catatan)}"` : ""}</small>
+                </div>
+                ${chip(s.nilai)}
               </div>
-              ${chip(s.nilai)}
-            </div>
-          `).join("") : '<div class="empty">Belum ada data setoran.</div>'}
+            `;
+          }).join("") || '<div class="empty">Belum ada setoran yang dicatat.</div>'}
         </div>
       </section>
     </div>
   `;
 
-  $("topLogoutBtn").onclick = () => logout(true);
-  $("goSetorBtn").onclick = () => { editId = null; tab = "add"; render(); };
-  $("allHistBtn").onclick = () => { tab = "hist"; render(); };
-
-  $("quoteForm").onsubmit = async ev => {
-    ev.preventDefault();
-    cleanExpiredQuotes();
-    const txt = $("quoteInput").value.trim();
-    if(!txt){
-      toast("Tulis quote terlebih dahulu.");
-      return;
-    }
-    S.quotes.push({
-      id: uid(),
-      pid: activeRole,
-      text: txt,
-      likes: [],
-      createdAt: Date.now()
-    });
-    await persistState();
-    toast("Quote terkirim.");
-    dash();
-  };
-
-  $("view").querySelectorAll("[data-like]").forEach(btn=>{
-    btn.onclick = async () => {
-      cleanExpiredQuotes();
-      const q = S.quotes.find(x=>x.id===btn.dataset.like);
-      if(!q) return;
-      if(!Array.isArray(q.likes)) q.likes = [];
-      if(q.likes.includes(activeRole)){
-        q.likes = q.likes.filter(x=>x!==activeRole);
-      }else{
-        q.likes.push(activeRole);
-      }
-      await persistState();
-      dash();
-    };
-  });
-
-  $("view").querySelectorAll("[data-delq]").forEach(btn=>{
-    btn.onclick = async () => {
-      const ok = await ask("Hapus quote ini?", "Hapus");
-      if(!ok) return;
-      S.quotes = S.quotes.filter(x=>x.id!==btn.dataset.delq);
-      await persistState();
-      toast("Quote dihapus.");
-      dash();
-    };
-  });
+  $("dashAddBtn").addEventListener("click", () => { tab = "add"; editId = null; render(); });
+  $("dashAllBtn").addEventListener("click", () => { tab = "hist"; render(); });
+  bindTopBarLogout();
 }
 
-function surahOpts(sel){
-  return SURAH.map(([n,a],i)=>`<option value="${i+1}" ${+(sel||1)===i+1?"selected":""}>${i+1}. ${esc(n)} (${a} ayat)</option>`).join("");
-}
-
-function formView(){
-  const cur = editId ? S.setoran.find(s=>s.id===editId) : null;
-  const targetPid = cur ? cur.pid : activeRole;
-  const penilaiId = cur ? cur.penilai : partnerIdOf(targetPid);
-  const v = cur || { pid:targetPid, penilai:penilaiId, jenis:"Ziyadah", surah:1, awal:1, akhir:1, tgl:today(), nilai:"Lancar", catatan:"" };
-  const sInfo = SURAH[(v.surah||1)-1] || SURAH[0];
+function renderAdd(){
+  const editing = editId ? S.setoran.find(s => s.id === editId) : null;
+  const pesertaId = editing ? editing.pid : activeRole;
+  const penilaiId = editing ? editing.penilai : partnerIdOf(pesertaId);
+  const curSurah = editing ? editing.surah : 1;
+  const curJenis = editing ? editing.jenis : "Ziyadah";
+  const curAwal = editing ? editing.awal : 1;
+  const info0 = getSurahInfo(curSurah) || { no:1, name:"Al-Fatihah", totalAyat:7 };
+  const curAkhir = editing ? editing.akhir : Math.min(info0.totalAyat, curAwal);
+  const curTgl = editing ? editing.tgl : today();
+  const curNilai = editing ? editing.nilai : "Lancar";
+  const curCatatan = editing ? editing.catatan : "";
 
   $("view").innerHTML = `
-    <div class="top-bar">
-      <div>
-        <h1>${cur ? "Ubah Setoran" : "Catat & Nilai Setoran"}</h1>
-        <p class="lead">Penyetor otomatis mengikuti akun aktif (<strong>${esc(pName(targetPid))}</strong>) dan dinilai oleh <strong>${esc(pName(penilaiId))}</strong>.</p>
-      </div>
-    </div>
-    <form class="card form-grid" id="f">
-      <div>
-        <label>Penyetor</label>
-        <div class="readonly-box">${esc(pName(targetPid))}</div>
-      </div>
-      <div>
-        <label>Penilai</label>
-        <div class="readonly-box">${esc(pName(penilaiId))}</div>
-      </div>
-      <div>
-        <label>Jenis Setoran</label>
-        <div class="seg">
-          ${["Ziyadah","Muroja'ah"].map(j=>`<label><input type="radio" name="jenis" value="${j}" ${v.jenis===j?"checked":""}><span>${j}</span></label>`).join("")}
+    ${topBar(editing ? "Edit Setoran" : "Catat Setoran", "Penilai otomatis diatur ke pasangan agar saling menyimak setoran.")}
+
+    <form class="card" id="setorForm">
+      <div class="form-grid">
+        <div class="field">
+          <label>Peserta Setor</label>
+          <div class="readonly-box">${esc(pName(pesertaId))}</div>
         </div>
-      </div>
-      <div>
-        <label for="tgl">Tanggal</label>
-        <input id="tgl" type="date" value="${esc(v.tgl)}" required>
-      </div>
-      <div class="full">
-        <label for="surah">Surah</label>
-        <select id="surah">${surahOpts(v.surah)}</select>
-      </div>
-      <div>
-        <label for="awal">Ayat Awal</label>
-        <input id="awal" type="number" min="1" max="${sInfo[1]}" value="${v.awal}" required>
-      </div>
-      <div>
-        <label for="akhir">Ayat Akhir</label>
-        <input id="akhir" type="number" min="1" max="${sInfo[1]}" value="${v.akhir}" required>
-      </div>
-      <div class="full">
-        <label>Penilaian</label>
-        <div class="seg">
-          ${NILAI.map(n=>`<label><input type="radio" name="nilai" value="${n}" ${v.nilai===n?"checked":""}><span>${n}</span></label>`).join("")}
+        <div class="field">
+          <label>Penyimak / Penilai</label>
+          <div class="readonly-box">${esc(pName(penilaiId))}</div>
         </div>
-      </div>
-      <div class="full">
-        <label for="catatan">Catatan</label>
-        <textarea id="catatan" placeholder="Catatan tajwid, waqaf, atau bagian yang perlu diulang">${esc(v.catatan)}</textarea>
-      </div>
-      <div class="full" style="display:flex;gap:8px;justify-content:flex-end">
-        ${cur ? '<button class="btn ghost" type="button" id="cancel">Batal</button>' : ""}
-        <button class="btn" type="submit">${cur ? "Simpan Perubahan" : "Simpan Setoran"}</button>
+
+        <div class="field full">
+          <label>Jenis Setoran</label>
+          <div class="seg">
+            ${["Ziyadah", "Muroja'ah"].map(j => `
+              <label>
+                <input type="radio" name="jenis" value="${esc(j)}" ${curJenis===j?"checked":""}>
+                <span>${esc(j)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="fSurah">Surah</label>
+          <select id="fSurah">
+            ${SURAH.map(([nama, ay], i) => `<option value="${i+1}" ${Number(curSurah)===(i+1)?"selected":""}>${i+1}. ${esc(nama)} (${ay} ayat)</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="fTgl">Tanggal Setor</label>
+          <input id="fTgl" type="date" value="${esc(curTgl)}" required>
+        </div>
+
+        <div class="field">
+          <label for="fAwal">Ayat Awal</label>
+          <input id="fAwal" type="number" min="1" max="${info0.totalAyat}" value="${Number(curAwal)||1}" required>
+        </div>
+
+        <div class="field">
+          <label for="fAkhir">Ayat Akhir</label>
+          <input id="fAkhir" type="number" min="1" max="${info0.totalAyat}" value="${Number(curAkhir)||1}" required>
+        </div>
+
+        <div class="field full">
+          <label>Penilaian</label>
+          <div class="seg">
+            ${NILAI.map(n => `
+              <label>
+                <input type="radio" name="nilai" value="${esc(n)}" ${curNilai===n?"checked":""}>
+                <span>${esc(n)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="field full">
+          <label for="fCatatan">Catatan / Koreksi Tajwid (opsional)</label>
+          <textarea id="fCatatan" placeholder="Contoh: Lancar di ayat 1–5, perhatikan mad thabi’i di akhir ayat...">${esc(curCatatan)}</textarea>
+        </div>
+
+        <div class="full" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" type="submit">${editing ? "Simpan Perubahan" : "Simpan Setoran"}</button>
+          ${editing ? `<button class="btn ghost" type="button" id="cancelEditBtn">Batal Edit</button>` : ""}
+        </div>
       </div>
     </form>
   `;
 
-  const surahEl = $("surah"), awalEl = $("awal"), akhirEl = $("akhir");
-  surahEl.onchange = () => {
-    const max = SURAH[+surahEl.value - 1][1];
-    awalEl.max = akhirEl.max = max;
-    if(+awalEl.value > max) awalEl.value = 1;
-    if(+akhirEl.value > max) akhirEl.value = max;
-  };
-  if($("cancel")) $("cancel").onclick = () => { editId = null; tab = "hist"; render(); };
+  const surahSel = $("fSurah");
+  const awalInp = $("fAwal");
+  const akhirInp = $("fAkhir");
 
-  $("f").onsubmit = async ev => {
-    ev.preventDefault();
-    const max = SURAH[+surahEl.value - 1][1];
-    const awal = +awalEl.value, akhir = +akhirEl.value;
-    if(awal < 1 || akhir > max || awal > akhir){
-      toast(`Rentang ayat harus 1 sampai ${max} dan awal ≤ akhir.`);
-      return;
+  surahSel.addEventListener("change", () => {
+    const info = getSurahInfo(surahSel.value);
+    if(!info) return;
+    awalInp.max = info.totalAyat;
+    akhirInp.max = info.totalAyat;
+    if(Number(awalInp.value) > info.totalAyat) awalInp.value = 1;
+    if(Number(akhirInp.value) > info.totalAyat) akhirInp.value = info.totalAyat;
+  });
+
+  if($("cancelEditBtn")){
+    $("cancelEditBtn").addEventListener("click", () => {
+      editId = null;
+      tab = "hist";
+      render();
+    });
+  }
+
+  $("setorForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const jenis = document.querySelector('input[name="jenis"]:checked')?.value || "Ziyadah";
+    const nilai = document.querySelector('input[name="nilai"]:checked')?.value || "Lancar";
+    const surah = Number(surahSel.value) || 1;
+    const info = getSurahInfo(surah);
+    const maxAyat = info ? info.totalAyat : 999;
+    let awal = Math.max(1, Math.min(maxAyat, Number(awalInp.value) || 1));
+    let akhir = Math.max(1, Math.min(maxAyat, Number(akhirInp.value) || 1));
+    if(akhir < awal){
+      const tmp = awal; awal = akhir; akhir = tmp;
     }
-    const jenis = $("f").jenis.value;
     const ayat = akhir - awal + 1;
-    const materi = `${SURAH[+surahEl.value - 1][0]} ${awal}–${akhir} (${ayat} ayat)`;
-    const rec = {
-      id: cur ? cur.id : uid(),
-      pid: targetPid,
-      penilai: penilaiId,
-      jenis,
-      surah: +surahEl.value,
-      awal,
-      akhir,
-      materi,
-      ayat,
-      tgl: $("tgl").value,
-      nilai: $("f").nilai.value,
-      catatan: $("catatan").value.trim(),
-      createdAt: cur ? cur.createdAt : Date.now()
-    };
-    if(cur) S.setoran = S.setoran.map(x=>x.id===cur.id ? rec : x);
-    else S.setoran.push(rec);
-    await persistState();
-    toast(cur ? "Setoran diperbarui." : "Setoran tersimpan.");
-    editId = null; tab = "hist"; render();
-  };
+    const tgl = $("fTgl").value || today();
+    const catatan = $("fCatatan").value.trim();
+    const materiLabel = info ? `${info.no}. ${info.name} (${awal}–${akhir})` : "";
+
+    if(editing){
+      editing.jenis = jenis;
+      editing.surah = surah;
+      editing.awal = awal;
+      editing.akhir = akhir;
+      editing.materi = materiLabel;
+      editing.ayat = ayat;
+      editing.tgl = tgl;
+      editing.nilai = nilai;
+      editing.catatan = catatan;
+      editId = null;
+      await persistState();
+      toast("Setoran diperbarui.");
+      tab = "hist";
+    }else{
+      S.setoran.push({
+        id: uid(),
+        pid: pesertaId,
+        penilai: penilaiId,
+        jenis,
+        surah,
+        awal,
+        akhir,
+        materi: materiLabel,
+        ayat,
+        tgl,
+        nilai,
+        catatan,
+        createdAt: Date.now()
+      });
+      await persistState();
+      toast("Setoran tersimpan!");
+      tab = "hist";
+    }
+    render();
+  });
+  bindTopBarLogout();
 }
 
-function hist(){
-  const q = flt.q.trim().toLowerCase();
-  const rows = sorted(S.setoran).filter(s =>
-    (!flt.nilai || s.nilai===flt.nilai) &&
-    (!flt.jenis || s.jenis===flt.jenis) &&
-    (!q || [pName(s.pid), pName(s.penilai), s.materi, s.catatan].some(x=>String(x||"").toLowerCase().includes(q)))
-  );
+function renderHist(){
+  const qLower = flt.q.trim().toLowerCase();
+  const rows = sorted(S.setoran).filter(s => {
+    if(flt.nilai && s.nilai !== flt.nilai) return false;
+    if(flt.jenis && s.jenis !== flt.jenis) return false;
+    if(qLower){
+      const info = getSurahInfo(s.surah);
+      const hay = `${pName(s.pid)} ${pName(s.penilai)} ${s.jenis} ${s.nilai} ${s.catatan} ${s.materi} ${info ? info.name : ""}`.toLowerCase();
+      if(!hay.includes(qLower)) return false;
+    }
+    return true;
+  });
 
   $("view").innerHTML = `
     <div class="top-bar">
       <div>
         <h1>Riwayat Setoran</h1>
-        <p class="lead">Seluruh catatan setoran dan penilaian Reski & Ima Cantik Sholeha🌸.</p>
+        <p class="lead">Semua catatan setoran Ziyadah &amp; Muroja’ah Reski dan Ima.</p>
       </div>
       <div class="top-actions">
-        <button class="btn ghost sm" type="button" id="printBtn">Cetak PDF</button>
-        <button class="btn sm" type="button" id="newBtn">+ Catat Setoran</button>
+        <button class="btn ghost sm" type="button" id="printBtn">Cetak / PDF</button>
+        <button class="btn sm" type="button" id="histAddBtn">+ Catat Setoran</button>
+        <button class="top-logout-btn" type="button" data-action="logout" aria-label="Keluar dari akun">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Keluar</span>
+        </button>
       </div>
     </div>
+
     <div class="card">
       <div class="filters">
-        <input id="q" type="search" placeholder="Cari penyetor, penilai, surah, atau catatan..." value="${esc(flt.q)}">
+        <input id="fSearch" type="search" value="${esc(flt.q)}" placeholder="Cari nama, surah, atau catatan…">
         <select id="fJenis">
           <option value="">Semua jenis</option>
           <option value="Ziyadah" ${flt.jenis==="Ziyadah"?"selected":""}>Ziyadah</option>
@@ -1544,206 +1913,228 @@ function hist(){
         </select>
         <select id="fNilai">
           <option value="">Semua penilaian</option>
-          ${NILAI.map(n=>`<option value="${n}" ${flt.nilai===n?"selected":""}>${n}</option>`).join("")}
+          ${NILAI.map(n => `<option value="${esc(n)}" ${flt.nilai===n?"selected":""}>${esc(n)}</option>`).join("")}
         </select>
       </div>
+
       <div class="tbl">
         <table>
           <thead>
-            <tr><th>Tanggal</th><th>Penyetor</th><th>Penilai</th><th>Jenis</th><th>Materi</th><th>Nilai</th><th>Catatan</th><th></th></tr>
+            <tr>
+              <th>Tanggal</th>
+              <th>Peserta</th>
+              <th>Jenis &amp; Surah</th>
+              <th>Ayat</th>
+              <th>Penilai</th>
+              <th>Nilai</th>
+              <th>Catatan</th>
+              <th style="text-align:right">Aksi</th>
+            </tr>
           </thead>
           <tbody>
-            ${rows.length ? rows.map(s=>`
-              <tr>
-                <td>${fmt(s.tgl)}</td>
-                <td><strong>${esc(pName(s.pid))}</strong></td>
-                <td>${esc(pName(s.penilai))}</td>
-                <td><span class="tag">${esc(s.jenis)}</span></td>
-                <td>${esc(s.materi)}</td>
-                <td>${chip(s.nilai)}</td>
-                <td>${esc(s.catatan||"–")}</td>
-                <td class="act">
-                  <button class="btn ghost sm" data-e="${s.id}">Ubah</button>
-                  <button class="btn danger sm" data-d="${s.id}">Hapus</button>
-                </td>
-              </tr>
-            `).join("") : '<tr><td colspan="8" class="empty">Tidak ada data yang cocok dengan filter.</td></tr>'}
+            ${rows.length ? rows.map(s => {
+              const info = getSurahInfo(s.surah);
+              const surahTxt = info ? `${info.no}. ${info.name} (${s.awal}–${s.akhir})` : (s.materi || "–");
+              return `
+                <tr>
+                  <td>${fmt(s.tgl)}</td>
+                  <td><strong>${esc(pName(s.pid))}</strong></td>
+                  <td><span class="tag">${esc(s.jenis)}</span><div style="margin-top:4px">${esc(surahTxt)}</div></td>
+                  <td>${s.ayat || 0}</td>
+                  <td>${esc(pName(s.penilai))}</td>
+                  <td>${chip(s.nilai)}</td>
+                  <td>${esc(s.catatan || "–")}</td>
+                  <td class="act">
+                    <button class="btn ghost sm" type="button" data-edit="${esc(s.id)}">Edit</button>
+                    <button class="btn danger sm" type="button" data-del="${esc(s.id)}">Hapus</button>
+                  </td>
+                </tr>
+              `;
+            }).join("") : '<tr><td colspan="8" class="empty">Tidak ada setoran yang sesuai dengan filter.</td></tr>'}
           </tbody>
         </table>
       </div>
     </div>
   `;
 
-  $("q").oninput = e => { flt.q = e.target.value; hist(); };
-  $("fJenis").onchange = e => { flt.jenis = e.target.value; hist(); };
-  $("fNilai").onchange = e => { flt.nilai = e.target.value; hist(); };
-  $("newBtn").onclick = () => { editId = null; tab = "add"; render(); };
-  $("printBtn").onclick = () => {
+  $("fSearch").addEventListener("input", () => { flt.q = $("fSearch").value; render(); });
+  $("fJenis").addEventListener("change", () => { flt.jenis = $("fJenis").value; render(); });
+  $("fNilai").addEventListener("change", () => { flt.nilai = $("fNilai").value; render(); });
+  $("histAddBtn").addEventListener("click", () => { tab = "add"; editId = null; render(); });
+
+  $("printBtn").addEventListener("click", () => {
     $("print").innerHTML = `
-      <h1>Rekap Setoran Hafalan</h1>
-      <p>Dicetak ${fmt(today())} · ${rows.length} catatan</p>
+      <h1>Buku Setoran Hafalan</h1>
+      <p>Dicetak pada ${esc(fmt(today()))}</p>
       <table>
-        <thead><tr><th>Tanggal</th><th>Penyetor</th><th>Penilai</th><th>Jenis</th><th>Materi</th><th>Nilai</th><th>Catatan</th></tr></thead>
-        <tbody>${rows.map(s=>`<tr><td>${fmt(s.tgl)}</td><td>${esc(pName(s.pid))}</td><td>${esc(pName(s.penilai))}</td><td>${esc(s.jenis)}</td><td>${esc(s.materi)}</td><td>${esc(s.nilai)}</td><td>${esc(s.catatan||"–")}</td></tr>`).join("")}</tbody>
+        <thead>
+          <tr><th>Tanggal</th><th>Peserta</th><th>Jenis</th><th>Surah</th><th>Ayat</th><th>Nilai</th><th>Catatan</th></tr>
+        </thead>
+        <tbody>
+          ${rows.map(s => {
+            const info = getSurahInfo(s.surah);
+            const sr = info ? `${info.no}. ${info.name} (${s.awal}–${s.akhir})` : (s.materi || "–");
+            return `<tr><td>${fmt(s.tgl)}</td><td>${esc(pName(s.pid))}</td><td>${esc(s.jenis)}</td><td>${esc(sr)}</td><td>${s.ayat||0}</td><td>${esc(s.nilai)}</td><td>${esc(s.catatan||"–")}</td></tr>`;
+          }).join("")}
+        </tbody>
       </table>
     `;
     window.print();
-  };
-  $("view").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{ editId=b.dataset.e; tab="add"; render(); });
-  $("view").querySelectorAll("[data-d]").forEach(b=>b.onclick=async()=>{
-    if(!await ask("Hapus catatan setoran ini?")) return;
-    S.setoran = S.setoran.filter(x=>x.id!==b.dataset.d);
-    await persistState();
-    toast("Setoran dihapus.");
-    hist();
   });
+
+  document.querySelectorAll("[data-edit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      editId = btn.dataset.edit;
+      tab = "add";
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const ok = await ask("Hapus catatan setoran ini?");
+      if(!ok) return;
+      S.setoran = S.setoran.filter(x => x.id !== btn.dataset.del);
+      await persistState();
+      toast("Setoran dihapus.");
+      render();
+    });
+  });
+  bindTopBarLogout();
 }
 
-function pesertaView(){
+function renderUser(){
   if(selP){
-    const p = S.peserta.find(x=>x.id===selP);
-    if(!p){ selP = null; return pesertaView(); }
-    const l = sorted(S.setoran.filter(s=>s.pid===p.id));
-    const ay = ayatOf(l);
-    const pct = p.target ? Math.min(100, Math.round(ay/p.target*100)) : 0;
+    const p = S.peserta.find(x => x.id === selP);
+    if(!p){ selP = null; return renderUser(); }
+    const list = sorted(S.setoran.filter(s => s.pid === p.id));
+    const ay = ayatOf(list);
+    const pct = Math.min(100, Math.round((ay / Math.max(1, p.target)) * 100));
 
     $("view").innerHTML = `
-      <button class="back" type="button" id="backBtn">← Kembali ke daftar peserta</button>
+      <button class="back" type="button" id="backPesertaBtn">← Kembali ke Daftar Peserta</button>
       <div class="top-bar">
         <div>
           <h1>${esc(p.nama)}</h1>
-          <p class="lead">${ay} / ${p.target} ayat Ziyadah (${pct}%) · ${l.length} setoran tercatat</p>
+          <p class="lead">Target hafalan: ${p.target} ayat Ziyadah · Tercapai ${ay} ayat (${pct}%)</p>
         </div>
-        <button class="btn sm" type="button" id="addForBtn">+ Catat Setoran</button>
       </div>
+
       <div class="stack">
         <div class="card">
-          <div class="prog-top"><strong>Target Ziyadah</strong><span>${ay} / ${p.target} ayat (${pct}%)</span></div>
+          <div class="prog-top"><strong>Progress Target</strong><span>${pct}%</span></div>
           <div class="bar"><i style="width:${pct}%"></i></div>
         </div>
-        ${renderCompletedSurahSection(l, `Surah Terselesaikan — ${p.nama}`)}
+
+        ${renderCompletedSurahSection(list, `Surah Lengkap Terselesaikan — ${p.nama}`)}
+
         <div class="card">
           <h2>Riwayat Setoran ${esc(p.nama)}</h2>
-          <div class="list" style="margin-top:10px">
-            ${l.length ? l.map(s=>`
-              <div class="row">
-                <div>
-                  <strong><span class="tag">${esc(s.jenis)}</span> ${esc(s.materi)}</strong>
-                  <small>${fmt(s.tgl)} · Dinilai oleh ${esc(pName(s.penilai))}${s.catatan?" · "+esc(s.catatan):""}</small>
+          <div class="list" style="margin-top:12px">
+            ${list.length ? list.map(s => {
+              const info = getSurahInfo(s.surah);
+              const sr = info ? `${info.no}. ${info.name} (${s.awal}–${s.akhir})` : (s.materi || "–");
+              return `
+                <div class="row">
+                  <div>
+                    <strong><span class="tag">${esc(s.jenis)}</span> ${esc(sr)}</strong>
+                    <small>${fmt(s.tgl)} · Penilai: ${esc(pName(s.penilai))}${s.ayat ? ` · ${s.ayat} ayat` : ""}${s.catatan ? ` · "${esc(s.catatan)}"` : ""}</small>
+                  </div>
+                  ${chip(s.nilai)}
                 </div>
-                ${chip(s.nilai)}
-              </div>
-            `).join("") : '<div class="empty">Belum ada setoran untuk peserta ini.</div>'}
+              `;
+            }).join("") : '<div class="empty">Belum ada setoran untuk peserta ini.</div>'}
           </div>
         </div>
       </div>
     `;
-    $("backBtn").onclick = () => { selP = null; pesertaView(); };
-    $("addForBtn").onclick = () => { editId = null; tab = "add"; render(); };
+
+    $("backPesertaBtn").addEventListener("click", () => { selP = null; renderUser(); });
     return;
   }
 
   $("view").innerHTML = `
-    <div class="top-bar">
-      <div>
-        <h1>Daftar Peserta</h1>
-        <p class="lead">Atur target hafalan dan pantau pencapaian surah tiap peserta.</p>
-      </div>
-    </div>
-    <div class="stack">
-      <div class="grid-2">
-        ${S.peserta.map(p=>{
-          const l = S.setoran.filter(s=>s.pid===p.id);
-          const ay = ayatOf(l);
-          const pct = p.target ? Math.min(100, Math.round(ay/p.target*100)) : 0;
-          return `
-            <div class="card">
-              <div class="prog-top"><strong>${esc(p.nama)}</strong><span>${pct}%</span></div>
-              <div class="prog-meta">${ay} / ${p.target} ayat Ziyadah · ${l.length} setoran</div>
-              <div class="bar"><i style="width:${pct}%"></i></div>
-              <form class="form-grid" data-p="${p.id}" style="margin-top:14px">
-                <div>
-                  <label>Target (ayat)</label>
-                  <input type="number" min="1" name="target" value="${p.target}" required>
-                </div>
-                <div style="display:flex;align-items:flex-end">
-                  <button class="btn ghost sm" type="submit">Simpan Target</button>
-                </div>
-              </form>
-              <div style="margin-top:12px">
-                <button class="btn sm" type="button" data-open="${p.id}">Lihat Detail</button>
-              </div>
+    ${topBar("Peserta", "Profil peserta dan pengaturan target ayat Ziyadah masing-masing.")}
+
+    <div class="grid-2">
+      ${S.peserta.map(p => {
+        const list = S.setoran.filter(s => s.pid === p.id);
+        const ay = ayatOf(list);
+        const pct = Math.min(100, Math.round((ay / Math.max(1, p.target)) * 100));
+        return `
+          <div class="card">
+            <div class="prog-top">
+              <strong>${esc(p.nama)}</strong>
+              <span>${pct}%</span>
             </div>
-          `;
-        }).join("")}
-      </div>
+            <div class="prog-meta">${ay} / ${p.target} ayat Ziyadah · ${list.length} setoran</div>
+            <div class="bar"><i style="width:${pct}%"></i></div>
+            <div class="field" style="margin-top:14px;margin-bottom:10px">
+              <label for="tgt_${esc(p.id)}">Target Ziyadah (ayat)</label>
+              <input id="tgt_${esc(p.id)}" type="number" min="1" max="6236" value="${p.target}">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn sm" type="button" data-save-tgt="${esc(p.id)}">Simpan Target</button>
+              <button class="btn ghost sm" type="button" data-detail-p="${esc(p.id)}">Lihat Detail</button>
+            </div>
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 
-  $("view").querySelectorAll("form[data-p]").forEach(f=>f.onsubmit=async ev=>{
-    ev.preventDefault();
-    const p = S.peserta.find(x=>x.id===f.dataset.p);
-    p.target = Math.max(1, +f.target.value || 600);
-    await persistState();
-    toast("Target tersimpan.");
-    pesertaView();
+  document.querySelectorAll("[data-save-tgt]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.saveTgt;
+      const val = Math.max(1, Number($("tgt_" + id).value) || 600);
+      const targetObj = S.peserta.find(x => x.id === id);
+      if(targetObj){
+        targetObj.target = val;
+        await persistState();
+        toast("Target diperbarui!");
+        renderUser();
+      }
+    });
   });
-  $("view").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ selP=b.dataset.open; pesertaView(); });
+
+  document.querySelectorAll("[data-detail-p]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selP = btn.dataset.detailP;
+      renderUser();
+    });
+  });
+  bindTopBarLogout();
 }
 
-function init(){
+function render(){
+  renderNav();
+  if(tab === "home") renderHome();
+  else if(tab === "dash") renderDash();
+  else if(tab === "add") renderAdd();
+  else if(tab === "hist") renderHist();
+  else if(tab === "user") renderUser();
+  else renderHome();
+}
+
+async function boot(){
   loadLocal();
   setupBroadcast();
-  initFirebaseSync();
+  setupAuthEvents();
+  await initFirebaseSync();
 
-  $("togglePassBtn").onclick = () => {
-    const nextVisible = $("loginPass").type === "password";
-    setEyeState(nextVisible);
-  };
+  let savedSession = null;
+  try{
+    savedSession = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+  }catch(e){}
 
-  $("loginForm").onsubmit = ev => {
-    ev.preventDefault();
-    const u = $("loginUser").value.trim().toLowerCase();
-    const p = $("loginPass").value;
-    const found = CREDENTIALS[u];
-
-    if(!found || found.pass !== p){
-      $("loginErr").textContent = "Username atau sandi tidak sesuai.";
-      $("loginErr").classList.remove("hidden");
-      return;
-    }
-
-    if($("rememberMe").checked){
-      localStorage.setItem(REMEMBER_KEY, JSON.stringify({
-        user: $("loginUser").value.trim(),
-        pass: p
-      }));
-    }else{
-      localStorage.removeItem(REMEMBER_KEY);
-    }
-
-    $("loginErr").classList.add("hidden");
-    activeRole = found.role;
-    tab = "dash";
-    editId = null;
-    selP = null;
-    sessionStorage.setItem(SESSION_KEY, activeRole);
-    showApp();
-    toast(`Selamat datang, ${found.nama}`);
-  };
-
-  $("sideLogoutBtn").onclick = () => logout(true);
-
-  const savedSession = sessionStorage.getItem(SESSION_KEY);
-  if(savedSession && ["p1","p2"].includes(savedSession)){
-    activeRole = savedSession;
-    showApp();
+  if(savedSession && (savedSession === "p1" || savedSession === "p2")){
+    enterApp(savedSession);
   }else{
-    applyRememberedLogin();
+    showLogin();
   }
 }
 
-init();
+boot();
 </script>
 </body>
 </html>

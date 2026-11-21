@@ -407,6 +407,47 @@ h2{
   margin-top:4px;
 }
 
+/* Tombol buka/tutup formulir Quotes dan Materi */
+.compose-toggle{
+  margin:0 0 16px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--bg);
+  overflow:hidden;
+}
+.compose-toggle summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 15px;
+  cursor:pointer;
+  font-weight:700;
+  color:var(--em-d);
+  user-select:none;
+}
+.compose-toggle summary::-webkit-details-marker{display:none}
+.compose-toggle summary::after{
+  content:"+";
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  flex:none;
+  border-radius:50%;
+  background:var(--sage);
+  color:var(--em-d);
+  font-size:21px;
+  line-height:1;
+}
+.compose-toggle[open] summary::after{content:"−"}
+.compose-toggle .compose-content{
+  padding:0 15px 15px;
+}
+.compose-toggle form{margin:0}
+.compose-toggle .field:last-child{margin-bottom:12px}
+
 .quote-box{
   display:grid;
   gap:12px;
@@ -1412,13 +1453,18 @@ function renderQuotesSection(){
         }).join("") : '<div class="empty">Belum ada quote aktif dalam 24 jam terakhir. Tulis penyemangat pertamamu di bawah!</div>'}
       </div>
 
-      <form id="quoteForm">
-        <div class="field">
-          <label for="quoteText">Tulis Quote untuk ${esc(pName(partnerIdOf(activeRole)))}</label>
-          <textarea id="quoteText" maxlength="280" placeholder="" required></textarea>
+      <details class="compose-toggle">
+        <summary>Tulis Quote Baru</summary>
+        <div class="compose-content">
+          <form id="quoteForm">
+            <div class="field">
+              <label for="quoteText">Tulis Quote untuk ${esc(pName(partnerIdOf(activeRole)))}</label>
+              <textarea id="quoteText" maxlength="280" placeholder="" required></textarea>
+            </div>
+            <button class="btn sm" type="submit">Kirim Quote</button>
+          </form>
         </div>
-        <button class="btn sm" type="submit">Kirim Quote</button>
-      </form>
+      </details>
     </section>
   `;
 }
@@ -1446,29 +1492,34 @@ function renderMateriSection(){
         <span class="tag">${(S.materi || []).length} Materi</span>
       </div>
 
-      <form id="materiForm" class="form-grid" style="margin-bottom:20px">
-        <div class="field">
-          <label for="matJudul">Judul / Topik Materi</label>
-          <input id="matJudul" type="text" maxlength="120" required placeholder="">
+      <details class="compose-toggle">
+        <summary>Tulis / Bagikan Materi Baru</summary>
+        <div class="compose-content">
+          <form id="materiForm" class="form-grid" style="margin-bottom:0">
+            <div class="field">
+              <label for="matJudul">Judul / Topik Materi</label>
+              <input id="matJudul" type="text" maxlength="120" required placeholder="">
+            </div>
+            <div class="field">
+              <label for="matKat">Kategori</label>
+              <select id="matKat">
+                ${MATERI_KAT.map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field full">
+              <label for="matIsi">Isi / Ringkasan Materi</label>
+              <textarea id="matIsi" maxlength="2000" required placeholder=""></textarea>
+            </div>
+            <div class="field full">
+              <label for="matLink">Tautan Referensi (opsional)</label>
+              <input id="matLink" type="text" placeholder="">
+            </div>
+            <div class="full">
+              <button class="btn" type="submit">Bagikan Materi</button>
+            </div>
+          </form>
         </div>
-        <div class="field">
-          <label for="matKat">Kategori</label>
-          <select id="matKat">
-            ${MATERI_KAT.map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("")}
-          </select>
-        </div>
-        <div class="field full">
-          <label for="matIsi">Isi / Ringkasan Materi</label>
-          <textarea id="matIsi" maxlength="2000" required placeholder=""></textarea>
-        </div>
-        <div class="field full">
-          <label for="matLink">Tautan Referensi (opsional)</label>
-          <input id="matLink" type="text" placeholder="">
-        </div>
-        <div class="full">
-          <button class="btn" type="submit">Bagikan Materi</button>
-        </div>
-      </form>
+      </details>
 
       <div class="filters">
         <input id="matSearch" type="search" value="${esc(materiFilter.q)}" placeholder="Cari judul, isi, atau pemateri…">

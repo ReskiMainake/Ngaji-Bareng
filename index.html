@@ -540,6 +540,25 @@ h2{
   font-size:16px;
   font-weight:700;
 }
+.materi-photo{
+  display:block;
+  width:min(100%,360px);
+  aspect-ratio:1 / 1;
+  object-fit:cover;
+  border-radius:13px;
+  margin:12px 0;
+  border:1px solid var(--line);
+  background:var(--surface);
+}
+.materi-photo-preview{
+  display:none;
+  width:min(100%,240px);
+  aspect-ratio:1 / 1;
+  object-fit:cover;
+  border-radius:12px;
+  margin-top:9px;
+  border:1px solid var(--line);
+}
 .materi-body{
   margin:8px 0 10px;
   font-size:14.5px;
@@ -1108,6 +1127,7 @@ function normalizeState(raw){
           judul: String(m.judul || "Catatan Materi").trim(),
           kategori: MATERI_KAT.includes(m.kategori) ? m.kategori : "Lainnya",
           isi: String(m.isi || "").trim(),
+          gambar: typeof m.gambar === "string" && /^data:image\/jpeg;base64,/.test(m.gambar) ? m.gambar : "",
           tautan: String(m.tautan || "").trim(),
           likes: Array.isArray(m.likes) ? m.likes.filter(x=>["p1","p2"].includes(x)) : [],
           createdAt: Number(m.createdAt) || Date.now()
@@ -1511,6 +1531,12 @@ function renderMateriSection(){
               <textarea id="matIsi" maxlength="2000" required placeholder=""></textarea>
             </div>
             <div class="field full">
+              <label for="matFoto">Foto Materi (opsional)</label>
+              <input id="matFoto" type="file" accept="image/*" capture="environment">
+              <small style="display:block;color:var(--mute);margin-top:5px">Pilih atau foto gambar. Gambar akan otomatis dipotong menjadi persegi.</small>
+              <img id="matFotoPreview" class="materi-photo-preview" alt="Pratinjau foto materi">
+            </div>
+            <div class="field full">
               <label for="matLink">Tautan Referensi (opsional)</label>
               <input id="matLink" type="text" placeholder="">
             </div>
@@ -1545,6 +1571,7 @@ function renderMateriSection(){
                 <span class="quote-time">${esc(pName(m.pid))} · ${esc(fmtTime(m.createdAt))}</span>
               </div>
               <p class="materi-body">${esc(m.isi)}</p>
+              ${m.gambar ? `<img class="materi-photo" src="${m.gambar}" alt="Foto materi ${esc(m.judul)}" loading="lazy">` : ""}
               ${validUrl ? `<div style="margin-bottom:10px"><a class="materi-link" href="${esc(validUrl)}" target="_blank" rel="noopener noreferrer">↗ Buka tautan referensi</a></div>` : ""}
               <div class="quote-foot">
                 <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-m-like="${esc(m.id)}">
@@ -1558,6 +1585,31 @@ function renderMateriSection(){
       </div>
     </section>
   `;
+}
+
+async function imageToSquareDataUrl(file){
+  if(!file || !file.type.startsWith("image/")) return "";
+  if(file.size > 10 * 1024 * 1024) throw new Error("Ukuran foto maksimal 10 MB.");
+  const objectUrl = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((resolve,reject)=>{
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error("Foto tidak dapat dibaca."));
+      el.src = objectUrl;
+    });
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    const sx = Math.floor((img.naturalWidth - side) / 2);
+    const sy = Math.floor((img.naturalHeight - side) / 2);
+    const canvas = document.createElement("canvas");
+    canvas.width = 720;
+    canvas.height = 720;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, sx, sy, side, side, 0, 0, 720, 720);
+    return canvas.toDataURL("image/jpeg", 0.78);
+  }finally{
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 function bindHomeEvents(){
@@ -1608,6 +1660,20 @@ function bindHomeEvents(){
     });
   });
 
+  const matFoto = $("matFoto");
+  if(matFoto){
+    matFoto.addEventListener("change", async () => {
+      const preview = $("matFotoPreview");
+      const file = matFoto.files?.[0];
+      if(!file){ preview.removeAttribute("src"); preview.style.display="none"; return; }
+      if(!file.type.startsWith("image/")){ toast("Pilih file gambar."); matFoto.value=""; return; }
+      if(file.size > 10 * 1024 * 1024){ toast("Ukuran foto maksimal 10 MB."); matFoto.value=""; return; }
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.style.display = "block";
+    });
+  }
+
   const mForm = $("materiForm");
   if(mForm){
     mForm.addEventListener("submit", async e => {
@@ -1616,7 +1682,12 @@ function bindHomeEvents(){
       const kategori = $("matKat").value;
       const isi = $("matIsi").value.trim();
       const tautan = $("matLink").value.trim();
+      const fotoFile = $("matFoto")?.files?.[0];
       if(!judul || !isi) return;
+      let gambar = "";
+      try{
+        if(fotoFile) gambar = await imageToSquareDataUrl(fotoFile);
+      }catch(err){ toast(err.message || "Gagal memproses foto."); return; }
       S.materi = Array.isArray(S.materi) ? S.materi : [];
       S.materi.push({
         id: uid(),
@@ -1624,6 +1695,7 @@ function bindHomeEvents(){
         judul,
         kategori,
         isi,
+        gambar,
         tautan,
         likes: [],
         createdAt: Date.now()

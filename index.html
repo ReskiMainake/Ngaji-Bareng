@@ -984,8 +984,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   #print table{min-width:0}
   #print th,#print td{font-size:12px;border-bottom:1px solid #bbb}
 }
-/* Tampilan publik: pas seperti layar handphone */
-.pub-wrap{max-width:440px;padding:18px 16px 40px}
+/* Tampilan publik: otomatis menyesuaikan HP dan laptop */
+.pub-wrap{max-width:1100px;padding:18px 16px 40px}
 .pub-wrap .stack{gap:44px}
 .pub-brand{font-size:26px}
 .pub-login-btn{padding:7px 18px;font-size:13px}
@@ -999,6 +999,26 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .pub-wrap .materi-list{grid-template-columns:1fr}
 .pub-wrap .materi-photo{width:100%}
 .pub-wrap .car.reels .car-slide{flex:0 0 74%}
+@media (min-width:700px){
+  .pub-wrap{padding:28px 32px 56px}
+  .pub-wrap .stack{gap:64px}
+  .pub-brand{font-size:32px}
+  .pub-login-btn{padding:9px 24px;font-size:14px}
+  .pub-hero2{padding:60px 32px 52px;border-radius:30px}
+  .pub-bismillah{font-size:38px}
+  .pub-hero2 h2{font-size:52px}
+  .pub-hero2 p{font-size:16px}
+  .pub-sec-head h2{font-size:40px}
+  .pq{padding:54px 64px 38px}
+  .pq-text{font-size:28px}
+  .pub-wrap .car:not(.reels){max-width:780px;margin:0 auto}
+  .pub-wrap .materi-list{grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+  .pub-wrap .materi-photo{width:min(100%,360px)}
+  .pub-wrap .car.reels .car-slide{flex:0 0 260px}
+  .pub-wrap .car-btn{width:42px;height:42px}
+  .pub-wrap .car-btn.prev{left:-16px}
+  .pub-wrap .car-btn.next{right:-16px}
+}
 </style>
 </head>
 <body>

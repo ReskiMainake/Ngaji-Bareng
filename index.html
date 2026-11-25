@@ -2318,8 +2318,102 @@ async function imageToSquareDataUrl(file){
   }
 }
 
+async function compressVideoIfNeeded(file, onStatus) {
+  if (file.size <= 6 * 1024 * 1024 || typeof MediaRecorder === "undefined") {
+    return file;
+  }
+
+  onStatus("Mengoptimalkan ukuran video agar cepat terkirim…");
+
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    video.src = url;
+    video.muted = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+      const maxW = 720;
+      const scale = video.videoWidth > maxW ? maxW / video.videoWidth : 1;
+      const w = Math.round(video.videoWidth * scale);
+      const h = Math.round(video.videoHeight * scale);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+
+      const canvasStream = canvas.captureStream(24);
+      try {
+        const vidStream = video.captureStream ? video.captureStream() : (video.mozCaptureStream ? video.mozCaptureStream() : null);
+        if (vidStream) {
+          vidStream.getAudioTracks().forEach(t => canvasStream.addTrack(t));
+        }
+      } catch (e) {}
+
+      const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")
+        ? "video/webm;codecs=vp8,opus"
+        : (MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "");
+
+      if (!mime) {
+        URL.revokeObjectURL(url);
+        resolve(file);
+        return;
+      }
+
+      const chunks = [];
+      const recorder = new MediaRecorder(canvasStream, {
+        mimeType: mime,
+        videoBitsPerSecond: 1_200_000
+      });
+
+      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        URL.revokeObjectURL(url);
+        const blob = new Blob(chunks, { type: mime });
+        if (blob.size > 0 && blob.size < file.size) {
+          const ext = mime.includes("mp4") ? "mp4" : "webm";
+          resolve(new File([blob], `reel.${ext}`, { type: mime }));
+        } else {
+          resolve(file);
+        }
+      };
+
+      video.onplay = () => {
+        recorder.start(250);
+        const draw = () => {
+          if (video.paused || video.ended) return;
+          ctx.drawImage(video, 0, 0, w, h);
+          const pct = Math.min(99, Math.round((video.currentTime / (video.duration || 1)) * 100));
+          onStatus(`Mengompresi video… ${pct}%`);
+          requestAnimationFrame(draw);
+        };
+        draw();
+      };
+
+      video.onended = () => {
+        if (recorder.state !== "inactive") recorder.stop();
+      };
+
+      video.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+
+      video.play().catch(() => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      });
+    };
+
+    video.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+  });
+}
+
 function bindReelEvents(){
-  selectedReelFile = null;
   const pick = $("reelPickBtn");
   const fileInp = $("reelFile");
   if(pick && fileInp) pick.addEventListener("click", () => fileInp.click());
@@ -2355,30 +2449,62 @@ function bindReelEvents(){
       e.preventDefault();
       if(uploading) return;
       const judul = $("reelJudul").value.trim();
-      if(!judul) return;
+      if(!judul){ toast("Isi judul video dulu."); return; }
       if(!selectedReelFile){ toast("Pilih video dulu."); return; }
       if(!fbStorage){ toast("Penyimpanan video belum siap. Periksa Firebase Storage."); return; }
 
-      const f = selectedReelFile;
-      const id = uid();
-      const ext = (f.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g,"") || "mp4";
-      const path = `reels/${fbCfg.room}/${id}.${ext}`;
       const submitBtn = $("reelSubmit");
+      const progEl = $("reelProg");
+      const barWrap = $("reelBarWrap");
+      const barEl = $("reelBar");
+
       uploading = true;
       submitBtn.disabled = true;
-      $("reelBarWrap").style.display = "block";
-      $("reelProg").textContent = "Mengunggah… 0%";
+      barWrap.style.display = "block";
+      barEl.style.width = "5%";
 
       try{
-        const task = uploadBytesResumable(sRef(fbStorage, path), f, { contentType: f.type });
+        const fileToUpload = await compressVideoIfNeeded(selectedReelFile, msg => {
+          if(progEl) progEl.textContent = msg;
+        });
+
+        const id = uid();
+        const ext = (fileToUpload.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g,"") || "mp4";
+        const path = `reels/${fbCfg.room}/${id}.${ext}`;
+
+        if(progEl) progEl.textContent = `Mengunggah (${(fileToUpload.size / 1048576).toFixed(1)} MB)… 0%`;
+
+        const task = uploadBytesResumable(sRef(fbStorage, path), fileToUpload, {
+          contentType: fileToUpload.type || "video/mp4",
+          cacheControl: "public,max-age=31536000"
+        });
+
+        let lastBytes = 0;
+        const stallTimer = setTimeout(() => {
+          if(lastBytes === 0){
+            task.cancel();
+          }
+        }, 15000);
+
         await new Promise((resolve, reject) => {
           task.on("state_changed", s => {
-            const pct = Math.round(s.bytesTransferred / s.totalBytes * 100);
-            const t = $("reelProg"); if(t) t.textContent = `Mengunggah… ${pct}%`;
-            const b = $("reelBar"); if(b) b.style.width = pct + "%";
-          }, reject, resolve);
+            lastBytes = s.bytesTransferred;
+            if(lastBytes > 0) clearTimeout(stallTimer);
+            const pct = Math.max(5, Math.round((s.bytesTransferred / s.totalBytes) * 100));
+            if(progEl) progEl.textContent = `Mengunggah… ${pct}%`;
+            if(barEl) barEl.style.width = pct + "%";
+          }, err => {
+            clearTimeout(stallTimer);
+            reject(err);
+          }, () => {
+            clearTimeout(stallTimer);
+            resolve();
+          });
         });
+
+        if(progEl) progEl.textContent = "Menyimpan data reels…";
         const url = await getDownloadURL(task.snapshot.ref);
+
         S.reels = Array.isArray(S.reels) ? S.reels : [];
         S.reels.push({ id, pid: activeRole, judul, url, path, likes: [], createdAt: Date.now() });
         selectedReelFile = null;
@@ -2389,9 +2515,13 @@ function bindReelEvents(){
       }catch(err){
         console.error("Upload error:", err);
         uploading = false;
-        toast("Gagal mengunggah video. Periksa Rules Firebase Storage.");
-        const b = $("reelSubmit"); if(b) b.disabled = false;
-        const t = $("reelProg"); if(t) t.textContent = "Unggahan gagal. Coba lagi.";
+        if(submitBtn) submitBtn.disabled = false;
+        const isCanceled = err?.code === "storage/canceled";
+        const msg = isCanceled
+          ? "Koneksi ke Firebase Storage macet. Pastikan fitur Storage sudah aktif & Rules mengizinkan unggah."
+          : "Gagal mengunggah video. Periksa koneksi internet atau Rules Firebase Storage.";
+        toast(msg);
+        if(progEl) progEl.textContent = msg;
       }
     });
   }

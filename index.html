@@ -788,6 +788,17 @@ h2{
   background:var(--bg);
   font-weight:600;
 }
+.ayat-summary{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:var(--sage);
+  color:var(--em-d);
+  font-size:13px;
+  font-weight:700;
+}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
 .seg label{margin:0;font-weight:500;font-size:14px}
 .seg input{position:absolute;opacity:0;width:0;height:0}
@@ -1119,6 +1130,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 /* Penyempurnaan arsip quotes, judul publik, dan formulir setoran */
 .home-quote-archive .quote-archive-list{display:grid;gap:12px}
+.quote-archive-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.quote-archive-panel{margin-top:12px;padding-top:14px;border-top:1px dashed var(--line);display:grid;gap:12px}
+.quote-archive-badge{font-size:12px;color:var(--mute)}
 .quote-archive-item{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,var(--surface),var(--bg))}
 .quote-archive-item .quote-body{margin:10px 0 12px;line-height:1.7}
 .quote-archive-item .quote-foot{display:flex;justify-content:flex-start;gap:8px;flex-wrap:wrap}
@@ -1265,6 +1279,7 @@ let editId = null;
 let selP = null;
 let flt = { q:"", nilai:"", jenis:"" };
 let materiFilter = { q:"", kat:"" };
+let quoteArchiveOpen = false;
 let S = defaultState();
 let bc = null;
 let dbRef = null;
@@ -1348,6 +1363,16 @@ function getSurahInfo(surahNum){
   const idx = Number(surahNum) - 1;
   if(idx < 0 || idx >= SURAH.length) return null;
   return { no: idx + 1, name: SURAH[idx][0], totalAyat: SURAH[idx][1] };
+}
+
+function buildAyatOptions(totalAyat, selected){
+  const max = Math.max(1, Number(totalAyat) || 1);
+  const sel = Math.max(1, Math.min(max, Number(selected) || 1));
+  const opts = [];
+  for(let i = 1; i <= max; i++){
+    opts.push(`<option value="${i}" ${i === sel ? "selected" : ""}>Ayat ${i}</option>`);
+  }
+  return opts.join("");
 }
 
 function getCompletedSurahByDate(list){
@@ -2000,6 +2025,7 @@ async function logout(){
   activeRole = null;
   editId = null;
   selP = null;
+  quoteArchiveOpen = false;
   tab = "home";
   try{
     localStorage.removeItem(SESSION_KEY);
@@ -2078,41 +2104,77 @@ function renderNav(){
   });
 }
 
+function renderQuoteCard(q){
+  const likes = Array.isArray(q.likes) ? q.likes : [];
+  const likedByMe = likes.includes(activeRole);
+  return `
+    <article class="quote-archive-item">
+      <div class="quote-head">
+        <strong>${esc(pName(q.pid))}</strong>
+        <span class="quote-time">${esc(fmtTime(q.createdAt))}</span>
+      </div>
+      <p class="quote-body">${esc(q.text)}</p>
+      <div class="quote-foot">
+        <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-q-like="${esc(q.id)}">
+          ${likedByMe ? "♥" : "♡"} Suka (${likes.length})
+        </button>
+        ${q.pid === activeRole ? `<button type="button" class="btn danger sm" data-q-del="${esc(q.id)}">Hapus</button>` : ""}
+      </div>
+    </article>
+  `;
+}
+
 function renderQuotesSection(){
-  const activeQuotes = [...(S.quotes || [])]
+  const sortedQuotes = [...(S.quotes || [])]
     .sort((a,b) => Number(b.createdAt) - Number(a.createdAt));
+
+  const latestByPid = new Map();
+  for(const q of sortedQuotes){
+    if(["p1","p2"].includes(q.pid) && !latestByPid.has(q.pid)){
+      latestByPid.set(q.pid, q);
+    }
+  }
+
+  // Tampilkan maksimal 1 quote terbaru untuk Reski (p1) dan 1 quote terbaru untuk Ima (p2)
+  const featuredQuotes = ["p1","p2"]
+    .map(pid => latestByPid.get(pid))
+    .filter(Boolean)
+    .sort((a,b) => Number(b.createdAt) - Number(a.createdAt));
+
+  const featuredIds = new Set(featuredQuotes.map(q => q.id));
+  const archivedQuotes = sortedQuotes.filter(q => !featuredIds.has(q.id));
 
   return `
     <section class="card home-quote-archive">
       <div class="sec-head">
         <div>
-          <h2>Arsip Quotes</h2>
-          <p class="sec-sub">Kumpulan pesan yang tersimpan · slide hanya ditampilkan di halaman publik</p>
+          <h2>Quotes Terbaru</h2>
+          <p class="sec-sub">1 quote terbaru untuk Reski dan 1 quote terbaru untuk Ima · slide hanya di halaman publik</p>
         </div>
-        <span class="tag">${activeQuotes.length} Quote</span>
+        <span class="tag">${featuredQuotes.length} Tampil · ${sortedQuotes.length} Total</span>
       </div>
+
       <div class="quote-archive-list">
-        ${activeQuotes.length ? activeQuotes.map(q => {
-          const likes = Array.isArray(q.likes) ? q.likes : [];
-          const likedByMe = likes.includes(activeRole);
-          return `
-            <article class="quote-archive-item">
-              <div class="quote-head">
-                <strong>${esc(pName(q.pid))}</strong>
-                <span class="quote-time">${esc(fmtTime(q.createdAt))}</span>
-              </div>
-              <p class="quote-body">${esc(q.text)}</p>
-              <div class="quote-foot">
-                <button type="button" class="like-btn ${likedByMe ? "liked" : ""}" data-q-like="${esc(q.id)}">
-                  ${likedByMe ? "♥" : "♡"} Suka (${likes.length})
-                </button>
-                ${q.pid === activeRole ? `<button type="button" class="btn danger sm" data-q-del="${esc(q.id)}">Hapus</button>` : ""}
-              </div>
-            </article>
-          `;
-        }).join("") : '<div class="empty">Belum ada quote. Tulis penyemangat pertamamu di bawah!</div>'}
+        ${featuredQuotes.length
+          ? featuredQuotes.map(renderQuoteCard).join("")
+          : '<div class="empty">Belum ada quote. Tulis penyemangat pertamamu di bawah!</div>'}
       </div>
-      <details class="compose-toggle">
+
+      ${archivedQuotes.length ? `
+        <div class="quote-archive-head">
+          <button type="button" class="btn ghost sm" id="toggleQuoteArchiveBtn" aria-expanded="${quoteArchiveOpen ? "true" : "false"}">
+            ${quoteArchiveOpen ? "Sembunyikan Archive" : `Archive Quotes (${archivedQuotes.length})`}
+          </button>
+          <span class="quote-archive-badge">${archivedQuotes.length} quote lainnya tersimpan di archive</span>
+        </div>
+        ${quoteArchiveOpen ? `
+          <div class="quote-archive-panel" id="quoteArchivePanel">
+            ${archivedQuotes.map(renderQuoteCard).join("")}
+          </div>
+        ` : ""}
+      ` : ""}
+
+      <details class="compose-toggle" style="margin-top:14px">
         <summary>Tulis Quote Baru</summary>
         <div class="compose-content">
           <form id="quoteForm">
@@ -2363,6 +2425,14 @@ function bindReelEvents(){
 
 function bindHomeEvents(){
   bindReelEvents();
+
+  const archiveBtn = $("toggleQuoteArchiveBtn");
+  if(archiveBtn){
+    archiveBtn.addEventListener("click", () => {
+      quoteArchiveOpen = !quoteArchiveOpen;
+      render();
+    });
+  }
 
   const qForm = $("quoteForm");
   if(qForm){
@@ -2672,9 +2742,10 @@ function renderAdd(){
   const penilaiId = editing ? editing.penilai : activeRole;
   const curSurah = editing ? editing.surah : 1;
   const curJenis = editing ? editing.jenis : "Ziyadah";
-  const curAwal = editing ? editing.awal : 1;
   const info0 = getSurahInfo(curSurah) || { no:1, name:"Al-Fatihah", totalAyat:7 };
-  const curAkhir = editing ? editing.akhir : Math.min(info0.totalAyat, curAwal);
+  const curAwal = editing ? Math.max(1, Math.min(info0.totalAyat, Number(editing.awal) || 1)) : 1;
+  const curAkhir = editing ? Math.max(1, Math.min(info0.totalAyat, Number(editing.akhir) || info0.totalAyat)) : info0.totalAyat;
+  const curTotal = Math.abs(curAkhir - curAwal) + 1;
   const curTgl = editing ? editing.tgl : today();
   const curNilai = editing ? editing.nilai : "Lancar";
   const curCatatan = editing ? editing.catatan : "";
@@ -2719,12 +2790,20 @@ function renderAdd(){
 
         <div class="field">
           <label for="fAwal">Ayat Awal</label>
-          <input id="fAwal" type="number" min="1" max="${info0.totalAyat}" value="${Number(curAwal)||1}" required>
+          <select id="fAwal" aria-label="Pilih ayat awal">
+            ${buildAyatOptions(info0.totalAyat, curAwal)}
+          </select>
         </div>
 
         <div class="field">
           <label for="fAkhir">Ayat Akhir</label>
-          <input id="fAkhir" type="number" min="1" max="${info0.totalAyat}" value="${Number(curAkhir)||1}" required>
+          <select id="fAkhir" aria-label="Pilih ayat akhir">
+            ${buildAyatOptions(info0.totalAyat, curAkhir)}
+          </select>
+        </div>
+
+        <div class="field full" style="margin-top:-4px">
+          <span class="ayat-summary" id="ayatSummary">Total dipilih: ${curTotal} dari ${info0.totalAyat} ayat</span>
         </div>
 
         <div class="field full">
@@ -2755,15 +2834,44 @@ function renderAdd(){
   const surahSel = $("fSurah");
   const awalInp = $("fAwal");
   const akhirInp = $("fAkhir");
+  const summaryEl = $("ayatSummary");
+
+  const updateAyatSummary = () => {
+    const info = getSurahInfo(surahSel.value);
+    const totalSurah = info ? info.totalAyat : 1;
+    const awal = Number(awalInp.value) || 1;
+    const akhir = Number(akhirInp.value) || totalSurah;
+    const jumlah = Math.abs(akhir - awal) + 1;
+    if(summaryEl){
+      summaryEl.textContent = `Total dipilih: ${jumlah} dari ${totalSurah} ayat (Ayat ${Math.min(awal, akhir)}–${Math.max(awal, akhir)})`;
+    }
+  };
 
   surahSel.addEventListener("change", () => {
     const info = getSurahInfo(surahSel.value);
     if(!info) return;
-    awalInp.max = info.totalAyat;
-    akhirInp.max = info.totalAyat;
-    if(Number(awalInp.value) > info.totalAyat) awalInp.value = 1;
-    if(Number(akhirInp.value) > info.totalAyat) akhirInp.value = info.totalAyat;
+    awalInp.innerHTML = buildAyatOptions(info.totalAyat, 1);
+    akhirInp.innerHTML = buildAyatOptions(info.totalAyat, info.totalAyat);
+    awalInp.value = "1";
+    akhirInp.value = String(info.totalAyat);
+    updateAyatSummary();
   });
+
+  awalInp.addEventListener("change", () => {
+    const awal = Number(awalInp.value) || 1;
+    const akhir = Number(akhirInp.value) || 1;
+    if(akhir < awal) akhirInp.value = String(awal);
+    updateAyatSummary();
+  });
+
+  akhirInp.addEventListener("change", () => {
+    const awal = Number(awalInp.value) || 1;
+    const akhir = Number(akhirInp.value) || 1;
+    if(akhir < awal) awalInp.value = String(akhir);
+    updateAyatSummary();
+  });
+
+  updateAyatSummary();
 
   if($("cancelEditBtn")){
     $("cancelEditBtn").addEventListener("click", () => {
@@ -2781,7 +2889,7 @@ function renderAdd(){
     const info = getSurahInfo(surah);
     const maxAyat = info ? info.totalAyat : 999;
     let awal = Math.max(1, Math.min(maxAyat, Number(awalInp.value) || 1));
-    let akhir = Math.max(1, Math.min(maxAyat, Number(akhirInp.value) || 1));
+    let akhir = Math.max(1, Math.min(maxAyat, Number(akhirInp.value) || maxAyat));
     if(akhir < awal){
       const tmp = awal; awal = akhir; akhir = tmp;
     }

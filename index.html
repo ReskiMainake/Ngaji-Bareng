@@ -1109,6 +1109,37 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   #publicView .quote-item{min-height:175px;padding:22px 18px}
 }
 
+
+.pub-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.pub-actions .like-btn,.pub-actions .share-btn{min-height:34px;padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer}
+.pub-actions .like-btn.liked{background:#fff0f3;border-color:#e5a2b2;color:#b4234b}
+.pub-actions .share-btn:hover,.pub-actions .like-btn:hover{border-color:var(--sage-d)}
+.pub-actions button:disabled{opacity:.55;cursor:wait}
+
+
+/* Penyempurnaan arsip quotes, judul publik, dan formulir setoran */
+.home-quote-archive .quote-archive-list{display:grid;gap:12px}
+.quote-archive-item{padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,var(--surface),var(--bg))}
+.quote-archive-item .quote-body{margin:10px 0 12px;line-height:1.7}
+.quote-archive-item .quote-foot{display:flex;justify-content:flex-start;gap:8px;flex-wrap:wrap}
+#publicView .sec-head h2{font-family:Amiri,serif;font-size:25px;color:var(--em-d);letter-spacing:.1px}
+#publicView .sec-head h2:first-letter{color:var(--em)}
+#publicView .sec-head{align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+#publicView .card{border-radius:22px}
+#view #setorForm{max-width:820px;margin:0 auto;border-radius:22px;padding:clamp(18px,3vw,28px)}
+#view #setorForm .form-grid{gap:16px}
+#view #setorForm .readonly-box{padding:12px 14px;border-radius:13px;background:var(--sage);border:1px solid var(--line);font-weight:700;color:var(--em-d)}
+#view #setorForm .field>label{color:var(--em-d);font-size:13px}
+#view #setorForm .field.full{padding-top:2px}
+#view #setorForm .seg{gap:9px}
+#view #setorForm .seg label span{border-radius:13px;padding:10px 14px}
+#view #setorForm button[type=submit]{min-width:170px;box-shadow:var(--shadow)}
+@media(max-width:600px){
+ .quote-archive-item{padding:14px}
+ #view #setorForm{padding:16px}
+ #view #setorForm .form-grid{gap:12px}
+ #publicView .sec-head h2{font-size:22px}
+}
 </style>
 </head>
 <body>
@@ -1182,7 +1213,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const CREDENTIALS = {
@@ -1239,10 +1271,28 @@ let dbRef = null;
 let unsubDb = null;
 let applyingRemote = false;
 let fbDb = null;
+let fbAuth = null;
 let fbStorage = null;
 let fbCfg = null;
 let pubUnsubs = [];
 let pubSig = "";
+let publicLikes = { quotes:{}, reels:{}, materi:{} };
+const PUBLIC_VISITOR_KEY = "ngaji-bareng-public-visitor-v1";
+function publicVisitorId(){
+  if(fbAuth?.currentUser?.uid) return fbAuth.currentUser.uid;
+  let id = localStorage.getItem(PUBLIC_VISITOR_KEY);
+  if(!id){ id = "v_" + uid().replace(/[^a-zA-Z0-9_-]/g, ""); localStorage.setItem(PUBLIC_VISITOR_KEY, id); }
+  return id;
+}
+function publicLikeInfo(col, id){
+  const bucket = publicLikes?.[col]?.[id] || {};
+  const visitor = publicVisitorId();
+  return { count:Object.keys(bucket).filter(k=>bucket[k] === true).length, mine:bucket[visitor] === true };
+}
+function publicActionButtons(col, id){
+  const info = publicLikeInfo(col,id);
+  return `<div class="pub-actions"><button type="button" class="like-btn ${info.mine ? "liked" : ""}" data-public-like="${col}" data-item-id="${esc(id)}">${info.mine ? "♥ Disukai" : "♡ Suka"} (${info.count})</button><button type="button" class="share-btn" data-public-share="${col}" data-item-id="${esc(id)}">↗ Bagikan</button></div>`;
+}
 let uploading = false;
 let selectedReelFile = null;
 
@@ -1591,6 +1641,11 @@ function startPublic(){
       S[c] = normalizeState({ [c]: fromMap(s.val()) })[c];
       if(!activeRole) renderPublic();
     }, err => console.error("Public read error:", err)));
+    const likesRef = ref(fbDb, `rooms/${fbCfg.room}/publicLikes/${c}`);
+    pubUnsubs.push(onValue(likesRef, s => {
+      publicLikes[c] = s.val() || {};
+      if(!activeRole) renderPublic();
+    }, err => console.error("Public likes read error:", err)));
   }
 }
 
@@ -1608,6 +1663,9 @@ async function initFirebaseSync(){
       appId: fbCfg.appId || undefined
     }, "buku-setoran-firebase-app");
     fbDb = getDatabase(fbApp);
+    fbAuth = getAuth(fbApp);
+    try{ await signInAnonymously(fbAuth); }
+    catch(e){ console.error("Anonymous auth error:", e); }
     try{ if(fbCfg.storageBucket) fbStorage = getStorage(fbApp); }catch(e){ console.error("Storage init error:", e); }
     startPublic();
   }catch(err){
@@ -1817,12 +1875,12 @@ function renderPublic(){
   const qs = [...(S.quotes || [])].sort(byNew);
   const ms = [...(S.materi || [])].sort(byNew);
   const rs = [...(S.reels || [])].sort(byNew);
-  const sig = JSON.stringify([qs, ms, rs]);
+  const sig = JSON.stringify([qs, ms, rs, publicLikes]);
   if(sig === pubSig) return;
   pubSig = sig;
 
   const reelsHtml = rs.length
-    ? carousel("pub-reels", rs.map(r => reelCard(r, `<span class="quote-time">♥ ${r.likes.length}</span>`)), {cls:"reels"})
+    ? carousel("pub-reels", rs.map(r => reelCard(r, publicActionButtons("reels", r.id))), {cls:"reels"})
     : '<div class="empty">Belum ada reels.</div>';
 
   const quotesHtml = qs.length
@@ -1830,7 +1888,7 @@ function renderPublic(){
         <article class="quote-item">
           <div class="quote-head"><strong>${esc(pName(q.pid))}</strong><span class="quote-time">${esc(fmtTime(q.createdAt))}</span></div>
           <p class="quote-body">${esc(q.text)}</p>
-          <span class="quote-time">♥ ${q.likes.length}</span>
+          ${publicActionButtons("quotes", q.id)}
         </article>`), {auto:true})
     : '<div class="empty">Belum ada quote.</div>';
 
@@ -1845,7 +1903,7 @@ function renderPublic(){
           <p class="materi-body">${esc(m.isi)}</p>
           ${m.gambar ? `<img class="materi-photo" src="${m.gambar}" alt="Foto materi ${esc(m.judul)}" loading="lazy">` : ""}
           ${url ? `<div style="margin-bottom:10px"><a class="materi-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">↗ Buka tautan referensi</a></div>` : ""}
-          <span class="quote-time">♥ ${m.likes.length}</span>
+          ${publicActionButtons("materi", m.id)}
         </article>`;
       }).join("")}</div>`
     : '<div class="empty">Belum ada materi.</div>';
@@ -1857,14 +1915,44 @@ function renderPublic(){
       <p class="sec-sub">Semoga setiap ilmu yang dibagikan menjadi pengingat dan membawa keberkahan.</p>
       <div class="pub-hero-line"><span>Belajar</span><i>✦</i><span>Berbagi</span><i>✦</i><span>Bertumbuh</span></div>
     </section>
-    <div class="pub-section-label"><span>01</span><div><strong>Quotes Pilihan</strong><small>Pengingat baik untuk hari ini</small></div></div>
-    ${pubSection("Quotes", "Pesan penyemangat dan pengingat dari kami", `${qs.length} Quote`, quotesHtml)}
-    <div class="pub-section-label reels-label"><span>02</span><div><strong>Video Reels</strong><small>Video singkat yang bisa menemani waktu belajarmu</small></div></div>
-    ${pubSection("Reels Video", "Geser untuk melihat video lainnya", `${rs.length} Video`, reelsHtml)}
+    ${pubSection("✦ Quotes Pilihan", "Pesan penyemangat dan pengingat dari kami", `${qs.length} Quote`, quotesHtml)}
+    ${pubSection("▶ Video Reels", "Geser untuk melihat video lainnya", `${rs.length} Video`, reelsHtml)}
     ${pubSection("Materi Belajar", "Ringkasan materi yang kami bagikan", `${ms.length} Materi`, materiHtml)}
     <footer class="pub-footer">Ngaji Bareng 🌼 <span>•</span> Semangat belajar dan saling mengingatkan</footer>
   `;
   initCarousels($("publicView"));
+  bindPublicActions();
+}
+
+async function bindPublicActions(){
+  const root = $("publicView");
+  root.querySelectorAll("[data-public-like]").forEach(btn => btn.addEventListener("click", async () => {
+    const col = btn.dataset.publicLike, id = btn.dataset.itemId;
+    if(!fbDb || !fbCfg || !fbAuth?.currentUser){ toast("Like publik belum siap. Aktifkan Anonymous Authentication di Firebase."); return; }
+    const visitor = publicVisitorId();
+    const reactionRef = ref(fbDb, `rooms/${fbCfg.room}/publicLikes/${col}/${id}/${visitor}`);
+    btn.disabled = true;
+    try{
+      if(publicLikeInfo(col,id).mine) await remove(reactionRef);
+      else await set(reactionRef, true);
+    }catch(err){
+      console.error("Public like error:", err);
+      toast("Like belum tersimpan. Periksa Rules Firebase.");
+    }finally{ btn.disabled = false; }
+  }));
+  root.querySelectorAll("[data-public-share]").forEach(btn => btn.addEventListener("click", async () => {
+    const col = btn.dataset.publicShare, id = btn.dataset.itemId;
+    const item = (S[col] || []).find(x=>x.id===id);
+    if(!item) return;
+    const title = col === "quotes" ? "Quote Ngaji Bareng" : col === "reels" ? (item.judul || "Video Ngaji Bareng") : (item.judul || "Materi Ngaji Bareng");
+    const shareUrl = new URL(window.location.href); shareUrl.hash = `${col}-${id}`;
+    const data = { title, text: col === "quotes" ? item.text : (item.judul || "Lihat berbagi dari Ngaji Bareng"), url:shareUrl.href };
+    try{
+      if(navigator.share) await navigator.share(data);
+      else if(navigator.clipboard?.writeText){ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); toast("Tautan berhasil disalin."); }
+      else { window.prompt("Salin tautan ini:", shareUrl.href); }
+    }catch(err){ if(err?.name !== "AbortError") { console.error("Share error:",err); toast("Tidak dapat membagikan tautan."); } }
+  }));
 }
 
 function showPublic(){
@@ -1995,21 +2083,20 @@ function renderQuotesSection(){
     .sort((a,b) => Number(b.createdAt) - Number(a.createdAt));
 
   return `
-    <section class="card">
+    <section class="card home-quote-archive">
       <div class="sec-head">
         <div>
-          <h2>Quotes Hari Ini</h2>
-          <p class="sec-sub">Pesan penyemangat · tampil sebagai slide di halaman publik</p>
+          <h2>Arsip Quotes</h2>
+          <p class="sec-sub">Kumpulan pesan yang tersimpan · slide hanya ditampilkan di halaman publik</p>
         </div>
         <span class="tag">${activeQuotes.length} Quote</span>
       </div>
-
-      <div class="quote-box">
-        ${activeQuotes.length ? carousel("home-quotes", activeQuotes.map(q => {
+      <div class="quote-archive-list">
+        ${activeQuotes.length ? activeQuotes.map(q => {
           const likes = Array.isArray(q.likes) ? q.likes : [];
           const likedByMe = likes.includes(activeRole);
           return `
-            <article class="quote-item">
+            <article class="quote-archive-item">
               <div class="quote-head">
                 <strong>${esc(pName(q.pid))}</strong>
                 <span class="quote-time">${esc(fmtTime(q.createdAt))}</span>
@@ -2023,16 +2110,15 @@ function renderQuotesSection(){
               </div>
             </article>
           `;
-        })) : '<div class="empty">Belum ada quote. Tulis penyemangat pertamamu di bawah!</div>'}
+        }).join("") : '<div class="empty">Belum ada quote. Tulis penyemangat pertamamu di bawah!</div>'}
       </div>
-
       <details class="compose-toggle">
         <summary>Tulis Quote Baru</summary>
         <div class="compose-content">
           <form id="quoteForm">
             <div class="field">
               <label for="quoteText">Tulis Quote</label>
-              <textarea id="quoteText" maxlength="280" placeholder="" required></textarea>
+              <textarea id="quoteText" maxlength="280" placeholder="Tuliskan pesan singkat yang menginspirasi..." required></textarea>
             </div>
             <button class="btn sm" type="submit">Kirim Quote</button>
           </form>
@@ -2480,8 +2566,8 @@ function renderHome(){
           <p>Selamat Datang Kembali🌸</p>
         </div>
       </section>
-      ${renderReelsSection()}
       ${renderQuotesSection()}
+      ${renderReelsSection()}
       ${renderMateriSection()}
     </div>
   `;
@@ -2582,8 +2668,8 @@ function renderDash(){
 
 function renderAdd(){
   const editing = editId ? S.setoran.find(s => s.id === editId) : null;
-  const pesertaId = editing ? editing.pid : activeRole;
-  const penilaiId = editing ? editing.penilai : partnerIdOf(pesertaId);
+  const pesertaId = editing ? editing.pid : partnerIdOf(activeRole);
+  const penilaiId = editing ? editing.penilai : activeRole;
   const curSurah = editing ? editing.surah : 1;
   const curJenis = editing ? editing.jenis : "Ziyadah";
   const curAwal = editing ? editing.awal : 1;
@@ -2594,16 +2680,16 @@ function renderAdd(){
   const curCatatan = editing ? editing.catatan : "";
 
   $("view").innerHTML = `
-    ${topBar(editing ? "Edit Setoran" : "Catat Setoran", "Penilai otomatis diatur  agar saling menyimak setoran🌸.")}
+    ${topBar(editing ? "Edit Setoran" : "Setoran Hafalan", "Saling menyimak dan memberi penilaian.")}
 
     <form class="card" id="setorForm">
       <div class="form-grid">
         <div class="field">
-          <label>Peserta Setor</label>
+          <label>Penyetor</label>
           <div class="readonly-box">${esc(pName(pesertaId))}</div>
         </div>
         <div class="field">
-          <label>Penyimak / Penilai</label>
+          <label>Penilai</label>
           <div class="readonly-box">${esc(pName(penilaiId))}</div>
         </div>
 

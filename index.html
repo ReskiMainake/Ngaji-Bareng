@@ -119,6 +119,86 @@ button,input,select,textarea{font:inherit;color:inherit}
   display:block;
 }
 .reel-title{font-weight:700;font-size:14px;margin:8px 2px 2px;overflow-wrap:anywhere}
+.reel-thumb-box{
+  position:relative;
+  width:100%;
+  aspect-ratio:9/16;
+  border-radius:11px;
+  overflow:hidden;
+  background:#111915;
+  cursor:pointer;
+}
+.reel-thumb-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.reel-thumb-fallback{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  padding:16px;
+  text-align:center;
+  color:#eaf4ee;
+  background:radial-gradient(circle at 75% 20%, rgba(75,192,148,.28), transparent 55%), linear-gradient(150deg, #0a4f3a 0%, #101d17 100%);
+}
+.reel-thumb-badge{
+  position:absolute;
+  top:9px;
+  left:9px;
+  z-index:2;
+  background:rgba(10,20,15,.78);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:999px;
+  backdrop-filter:blur(4px);
+}
+.reel-play-btn{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:2;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:0;
+  background:rgba(15,107,79,.92);
+  color:#fff;
+  font-size:20px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+  transition:transform .16s ease, background-color .16s ease;
+}
+.reel-thumb-box:hover .reel-play-btn{
+  transform:translate(-50%,-50%) scale(1.06);
+  background:var(--em);
+}
+.reel-link-preview{
+  margin-top:9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  background:var(--surface);
+  display:none;
+  gap:10px;
+  align-items:center;
+}
+.reel-link-preview.show{display:flex}
+.reel-link-preview img{
+  width:56px;
+  height:88px;
+  object-fit:cover;
+  border-radius:8px;
+  background:#111915;
+  flex:none;
+}
 .reel-preview{
   display:none;
   width:min(100%,200px);
@@ -1750,33 +1830,86 @@ function goPublic(){
   showPublic();
 }
 
-/* ===== Reels (video unggahan) ===== */
-function reelMedia(r){
-  if(r.path){
-    return `<video class="reel-frame" src="${esc(r.url)}" controls playsinline preload="metadata"></video>`;
+/* ===== Reels Link (YouTube, Instagram, TikTok) ===== */
+function parseReelLink(raw){
+  const url = safeUrl(raw);
+  if(!url) return null;
+  let u;
+  try{ u = new URL(url); }catch(e){ return null; }
+  const host = u.hostname.replace(/^www\.|^m\.|^vm\.|^vt\./i, "").toLowerCase();
+
+  let ytId = null;
+  if(host === "youtu.be"){
+    ytId = u.pathname.replace(/^\//, "").split("/")[0] || null;
+  }else if(host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com")){
+    const m = u.pathname.match(/^\/(?:shorts|embed|live|v)\/([\w-]{6,})/);
+    ytId = m ? m[1] : u.searchParams.get("v");
   }
-  return reelEmbed(r.url);
+  if(ytId){
+    const cleanId = ytId.replace(/[^\w-]/g, "");
+    return {
+      platform: "YouTube",
+      url,
+      embedUrl: `https://www.youtube.com/embed/${encodeURIComponent(cleanId)}?autoplay=1&rel=0`,
+      thumb: `https://i.ytimg.com/vi/${encodeURIComponent(cleanId)}/hqdefault.jpg`,
+      canEmbed: true
+    };
+  }
+
+  if(host.endsWith("instagram.com")){
+    const m = u.pathname.match(/^\/(?:reels?|reel|p|tv)\/([A-Za-z0-9_-]+)/);
+    const code = m ? m[1] : "";
+    return {
+      platform: "Instagram",
+      url,
+      embedUrl: code ? `https://www.instagram.com/reel/${encodeURIComponent(code)}/embed/` : "",
+      thumb: code ? `https://www.instagram.com/p/${encodeURIComponent(code)}/media/?size=l` : "",
+      canEmbed: Boolean(code)
+    };
+  }
+
+  if(host.endsWith("tiktok.com")){
+    const m = u.pathname.match(/\/video\/(\d+)/);
+    const vid = m ? m[1] : "";
+    return {
+      platform: "TikTok",
+      url,
+      embedUrl: vid ? `https://www.tiktok.com/embed/v2/${encodeURIComponent(vid)}` : "",
+      thumb: "",
+      canEmbed: Boolean(vid)
+    };
+  }
+
+  return {
+    platform: host || "Video",
+    url,
+    embedUrl: "",
+    thumb: "",
+    canEmbed: false
+  };
 }
 
-function reelEmbed(raw){
-  const url = safeUrl(raw);
-  if(!url) return "";
-  let u; try{ u = new URL(url); }catch(e){ return ""; }
-  const h = u.hostname.replace(/^www\.|^m\./,"");
-  let id = null;
-  if(h === "youtu.be") id = u.pathname.slice(1);
-  else if(h.endsWith("youtube.com")){
-    const m = u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]{6,})/);
-    id = m ? m[1] : u.searchParams.get("v");
-  }
-  if(id) return `<iframe class="reel-frame" src="https://www.youtube.com/embed/${encodeURIComponent(id)}" title="Video reels" loading="lazy" allowfullscreen allow="encrypted-media; picture-in-picture"></iframe>`;
-  if(/\.(mp4|webm|mov)$/i.test(u.pathname))
-    return `<video class="reel-frame" src="${esc(url)}" controls playsinline preload="metadata"></video>`;
-  return `<a class="materi-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">↗ Buka video</a>`;
+function reelThumbHtml(r){
+  const info = parseReelLink(r.url);
+  if(!info) return "";
+  const thumbSrc = r.thumb || info.thumb || "";
+  const idAttr = esc(r.id);
+
+  return `
+    <div class="reel-thumb-box" data-reel-play="${idAttr}" role="button" tabindex="0" aria-label="Putar video ${esc(r.judul)}">
+      <span class="reel-thumb-badge">${esc(info.platform)}</span>
+      ${thumbSrc
+        ? `<img class="reel-thumb-img" src="${esc(thumbSrc)}" alt="Thumbnail ${esc(r.judul)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+           <div class="reel-thumb-fallback" style="display:none"><div><strong>${esc(info.platform)}</strong><div style="font-size:12px;opacity:.82;margin-top:4px">Klik untuk memutar</div></div></div>`
+        : `<div class="reel-thumb-fallback"><div><strong>${esc(info.platform)}</strong><div style="font-size:12px;opacity:.82;margin-top:4px">${info.canEmbed ? "Klik untuk memutar" : "Buka tautan video"}</div></div></div>`
+      }
+      <span class="reel-play-btn" aria-hidden="true">${info.canEmbed ? "▶" : "↗"}</span>
+    </div>
+  `;
 }
 
 function reelCard(r, actions=""){
-  return `<article class="reel-card">${reelMedia(r)}
+  return `<article class="reel-card" data-reel-card="${esc(r.id)}">${reelThumbHtml(r)}
     <div class="reel-title">${esc(r.judul)}</div>
     <div class="quote-time" style="margin:0 2px 8px">${esc(pName(r.pid))} · ${esc(fmtTime(r.createdAt))}</div>
     ${actions}</article>`;
@@ -1788,32 +1921,32 @@ function renderReelsSection(){
     <section class="card">
       <div class="sec-head">
         <div>
-          <h2>Reels Video</h2>
-          <p class="sec-sub">Unggah video pendek (maks. ${MAX_REEL_MB} MB) · tampil sebagai slide di halaman publik</p>
+          <h2>Reels Link</h2>
+          <p class="sec-sub">Tempel link YouTube, Instagram Reels, atau TikTok · thumbnail &amp; pemutar tampil di Beranda publik</p>
         </div>
         <span class="tag">${list.length} Video</span>
       </div>
 
       <details class="compose-toggle">
-        <summary>Unggah Reels Baru</summary>
+        <summary>Bagikan Link Reels Baru</summary>
         <div class="compose-content">
-          <form id="reelForm">
+          <form id="reelLinkForm">
             <div class="field">
               <label for="reelJudul">Judul / Keterangan</label>
-              <input id="reelJudul" type="text" maxlength="120" required>
+              <input id="reelJudul" type="text" maxlength="120" required placeholder="Contoh: Muraja'ah surah Al-Mulk">
             </div>
             <div class="field">
-              <label>File Video</label>
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <button class="btn sm" id="reelPickBtn" type="button">Pilih Video</button>
+              <label for="reelUrlInput">Link Reels (YouTube / Instagram / TikTok)</label>
+              <input id="reelUrlInput" type="url" required placeholder="https://youtube.com/shorts/... atau instagram.com/reel/... atau tiktok.com/...">
+              <div class="reel-link-preview" id="reelLinkPreview">
+                <img id="reelLinkPrevImg" src="" alt="Pratinjau thumbnail" style="display:none">
+                <div style="min-width:0">
+                  <strong id="reelLinkPrevPlat" style="font-size:13px;color:var(--em-d)">–</strong>
+                  <small id="reelLinkPrevNote" style="display:block;color:var(--mute);font-size:12px">Tempelkan link video untuk melihat pratinjau thumbnail.</small>
+                </div>
               </div>
-              <input id="reelFile" type="file" accept="video/*" style="display:none">
-              <small id="reelFileName" style="display:block;color:var(--mute);margin-top:7px">Belum ada video dipilih.</small>
-              <video id="reelPreview" class="reel-preview" controls playsinline></video>
             </div>
-            <div class="upload-bar" id="reelBarWrap"><i id="reelBar"></i></div>
-            <small id="reelProg" style="display:block;color:var(--mute);margin-bottom:10px"></small>
-            <button class="btn sm" id="reelSubmit" type="submit">Unggah &amp; Bagikan</button>
+            <button class="btn sm" id="reelLinkSubmit" type="submit">Bagikan Reels</button>
           </form>
         </div>
       </details>
@@ -1825,7 +1958,7 @@ function renderReelsSection(){
           <button type="button" class="like-btn ${mine ? "liked" : ""}" data-r-like="${esc(r.id)}">${mine ? "♥" : "♡"} Suka (${likes.length})</button>
           ${r.pid === activeRole ? `<button type="button" class="btn danger sm" data-r-del="${esc(r.id)}">Hapus</button>` : ""}
         </div>`);
-      }), {cls:"reels"}) : '<div class="empty">Belum ada reels. Unggah video pertamamu!</div>'}
+      }), {cls:"reels"}) : '<div class="empty">Belum ada link reels. Bagikan tautan pertamamu!</div>'}
     </section>
   `;
 }
@@ -1946,6 +2079,7 @@ function renderPublic(){
     <footer class="pub-footer">Ngaji Bareng 🌼 <span>•</span> Semangat belajar dan saling mengingatkan</footer>
   `;
   initCarousels($("publicView"));
+  bindReelPlay($("publicView"));
   bindPublicActions();
 }
 
@@ -2413,115 +2547,114 @@ async function compressVideoIfNeeded(file, onStatus) {
   });
 }
 
-function bindReelEvents(){
-  const pick = $("reelPickBtn");
-  const fileInp = $("reelFile");
-  if(pick && fileInp) pick.addEventListener("click", () => fileInp.click());
-
-  if(fileInp){
-    fileInp.addEventListener("change", () => {
-      const f = fileInp.files?.[0];
-      if(!f) return;
-      if(!f.type.startsWith("video/")){
-        toast("Pilih file video.");
-        fileInp.value = "";
-        return;
+function bindReelPlay(root){
+  root.querySelectorAll("[data-reel-play]").forEach(box => {
+    const activate = () => {
+      const id = box.dataset.reelPlay;
+      const r = (S.reels || []).find(x => x.id === id);
+      if(!r) return;
+      const info = parseReelLink(r.url);
+      if(!info) return;
+      if(info.canEmbed && info.embedUrl){
+        const iframe = document.createElement("iframe");
+        iframe.className = "reel-frame";
+        iframe.src = info.embedUrl;
+        iframe.title = r.judul || "Video reels";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        box.replaceWith(iframe);
+      }else{
+        window.open(info.url, "_blank", "noopener,noreferrer");
       }
-      if(f.size > MAX_REEL_MB * 1024 * 1024){
-        toast(`Ukuran video maksimal ${MAX_REEL_MB} MB.`);
-        fileInp.value = "";
-        return;
+    };
+    box.addEventListener("click", activate);
+    box.addEventListener("keydown", ev => {
+      if(ev.key === "Enter" || ev.key === " "){
+        ev.preventDefault();
+        activate();
       }
-      selectedReelFile = f;
-      $("reelFileName").textContent = `${f.name} (${(f.size / 1048576).toFixed(1)} MB)`;
-      const pv = $("reelPreview");
-      if(pv.dataset.u) URL.revokeObjectURL(pv.dataset.u);
-      const u = URL.createObjectURL(f);
-      pv.dataset.u = u;
-      pv.src = u;
-      pv.style.display = "block";
     });
+  });
+}
+
+function bindReelEvents(){
+  bindReelPlay($("view"));
+
+  const urlInp = $("reelUrlInput");
+  const prevBox = $("reelLinkPreview");
+  const prevImg = $("reelLinkPrevImg");
+  const prevPlat = $("reelLinkPrevPlat");
+  const prevNote = $("reelLinkPrevNote");
+
+  const updatePreview = () => {
+    if(!urlInp || !prevBox) return;
+    const raw = urlInp.value.trim();
+    if(!raw){
+      prevBox.classList.remove("show");
+      return;
+    }
+    const info = parseReelLink(raw);
+    prevBox.classList.add("show");
+    if(!info){
+      prevPlat.textContent = "Tautan tidak valid";
+      prevNote.textContent = "Masukkan tautan YouTube, Instagram, atau TikTok yang valid.";
+      prevImg.style.display = "none";
+      return;
+    }
+    prevPlat.textContent = info.platform;
+    if(info.thumb){
+      prevImg.src = info.thumb;
+      prevImg.style.display = "block";
+      prevImg.onerror = () => { prevImg.style.display = "none"; };
+    }else{
+      prevImg.style.display = "none";
+    }
+    prevNote.textContent = info.canEmbed
+      ? "Siap diputar langsung saat diklik di Beranda publik."
+      : "Akan dibuka di tab baru saat diklik.";
+  };
+
+  if(urlInp){
+    urlInp.addEventListener("input", updatePreview);
+    urlInp.addEventListener("change", updatePreview);
   }
 
-  const rForm = $("reelForm");
+  const rForm = $("reelLinkForm");
   if(rForm){
     rForm.addEventListener("submit", async e => {
       e.preventDefault();
       if(uploading) return;
       const judul = $("reelJudul").value.trim();
+      const rawUrl = $("reelUrlInput").value.trim();
+      const info = parseReelLink(rawUrl);
       if(!judul){ toast("Isi judul video dulu."); return; }
-      if(!selectedReelFile){ toast("Pilih video dulu."); return; }
-      if(!fbStorage){ toast("Penyimpanan video belum siap. Periksa Firebase Storage."); return; }
+      if(!info){ toast("Masukkan link video YouTube, Instagram, atau TikTok yang valid."); return; }
 
-      const submitBtn = $("reelSubmit");
-      const progEl = $("reelProg");
-      const barWrap = $("reelBarWrap");
-      const barEl = $("reelBar");
-
+      const submitBtn = $("reelLinkSubmit");
       uploading = true;
-      submitBtn.disabled = true;
-      barWrap.style.display = "block";
-      barEl.style.width = "5%";
+      if(submitBtn) submitBtn.disabled = true;
 
       try{
-        const fileToUpload = await compressVideoIfNeeded(selectedReelFile, msg => {
-          if(progEl) progEl.textContent = msg;
-        });
-
-        const id = uid();
-        const ext = (fileToUpload.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g,"") || "mp4";
-        const path = `reels/${fbCfg.room}/${id}.${ext}`;
-
-        if(progEl) progEl.textContent = `Mengunggah (${(fileToUpload.size / 1048576).toFixed(1)} MB)… 0%`;
-
-        const task = uploadBytesResumable(sRef(fbStorage, path), fileToUpload, {
-          contentType: fileToUpload.type || "video/mp4",
-          cacheControl: "public,max-age=31536000"
-        });
-
-        let lastBytes = 0;
-        const stallTimer = setTimeout(() => {
-          if(lastBytes === 0){
-            task.cancel();
-          }
-        }, 15000);
-
-        await new Promise((resolve, reject) => {
-          task.on("state_changed", s => {
-            lastBytes = s.bytesTransferred;
-            if(lastBytes > 0) clearTimeout(stallTimer);
-            const pct = Math.max(5, Math.round((s.bytesTransferred / s.totalBytes) * 100));
-            if(progEl) progEl.textContent = `Mengunggah… ${pct}%`;
-            if(barEl) barEl.style.width = pct + "%";
-          }, err => {
-            clearTimeout(stallTimer);
-            reject(err);
-          }, () => {
-            clearTimeout(stallTimer);
-            resolve();
-          });
-        });
-
-        if(progEl) progEl.textContent = "Menyimpan data reels…";
-        const url = await getDownloadURL(task.snapshot.ref);
-
         S.reels = Array.isArray(S.reels) ? S.reels : [];
-        S.reels.push({ id, pid: activeRole, judul, url, path, likes: [], createdAt: Date.now() });
-        selectedReelFile = null;
+        S.reels.push({
+          id: uid(),
+          pid: activeRole,
+          judul,
+          url: info.url,
+          thumb: info.thumb || "",
+          platform: info.platform,
+          likes: [],
+          createdAt: Date.now()
+        });
         uploading = false;
         await persistState();
-        toast("Reels berhasil diunggah!");
+        toast("Link reels berhasil dibagikan!");
         render();
       }catch(err){
-        console.error("Upload error:", err);
+        console.error("Save reel link error:", err);
         uploading = false;
         if(submitBtn) submitBtn.disabled = false;
-        const isCanceled = err?.code === "storage/canceled";
-        const msg = isCanceled
-          ? "Koneksi ke Firebase Storage macet. Pastikan fitur Storage sudah aktif & Rules mengizinkan unggah."
-          : "Gagal mengunggah video. Periksa koneksi internet atau Rules Firebase Storage.";
-        toast(msg);
-        if(progEl) progEl.textContent = msg;
+        toast("Gagal menyimpan link reels.");
       }
     });
   }
@@ -2541,18 +2674,13 @@ function bindReelEvents(){
     btn.addEventListener("click", async () => {
       const ok = await ask("Hapus reels ini?");
       if(!ok) return;
-      const r = (S.reels || []).find(x => x.id === btn.dataset.rDel);
       S.reels = (S.reels || []).filter(x => x.id !== btn.dataset.rDel);
       await persistState();
-      if(r && r.path && fbStorage){
-        deleteObject(sRef(fbStorage, r.path)).catch(err => console.error("Hapus file video gagal:", err));
-      }
       toast("Reels dihapus.");
       render();
     });
   });
 }
-
 function bindHomeEvents(){
   bindReelEvents();
 
